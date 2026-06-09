@@ -1,0 +1,44 @@
+<main class="login-page">
+  <section class="login-panel shadow-sm">
+    <div class="mb-4">
+      <div class="brand-mark mb-3"><i class="bi bi-tree"></i></div>
+      <h1 class="h3 mb-1">CampingManager</h1>
+      <p class="app-muted mb-0">Accesso amministratore</p>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          autocomplete="username"
+          formControlName="email"
+          [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        <div class="invalid-feedback">Inserisci un indirizzo email valido.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          autocomplete="current-password"
+          formControlName="password"
+          [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
+        />
+        <div class="invalid-feedback">La password e' obbligatoria.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+        <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+        Accedi
+      </button>
+    </form>
+  </section>
+</main>

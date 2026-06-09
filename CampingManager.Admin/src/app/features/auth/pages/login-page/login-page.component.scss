@@ -1,0 +1,28 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background:
+    linear-gradient(rgba(21, 34, 56, 0.72), rgba(21, 34, 56, 0.72)),
+    url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+.login-panel {
+  width: min(100%, 420px);
+  background: #fff;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.brand-mark {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.5rem;
+  color: #fff;
+  background: #2f80ed;
+}

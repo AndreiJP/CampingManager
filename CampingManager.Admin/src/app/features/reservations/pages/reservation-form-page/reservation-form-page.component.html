@@ -1,0 +1,105 @@
+<app-page-header
+  [title]="isEditMode ? 'Modifica prenotazione' : 'Nuova prenotazione'"
+  subtitle="Gestisci periodo, cliente, piazzola e stato della prenotazione."
+>
+  <a class="btn btn-outline-secondary" routerLink="/reservations">
+    <i class="bi bi-arrow-left me-1"></i>
+    Torna alla lista
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="save()" class="row g-3" novalidate>
+      <div class="col-md-4">
+        <label class="form-label" for="reservationCode">Codice</label>
+        <input id="reservationCode" class="form-control" formControlName="reservationCode" [class.is-invalid]="form.controls.reservationCode.touched && form.controls.reservationCode.invalid" autocomplete="off" />
+        <div class="invalid-feedback">Codice obbligatorio, max 30 caratteri, solo lettere, numeri e trattini.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="customerId">Cliente</label>
+        <select id="customerId" class="form-select" formControlName="customerId" [class.is-invalid]="form.controls.customerId.touched && form.controls.customerId.invalid">
+          <option [ngValue]="0">Seleziona cliente</option>
+          <option *ngFor="let customer of customers" [ngValue]="customer.id">{{ customer.firstName }} {{ customer.lastName }}</option>
+        </select>
+        <div class="invalid-feedback">Cliente obbligatorio.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="status">Stato</label>
+        <select id="status" class="form-select" formControlName="status">
+          <option *ngFor="let item of statuses" [ngValue]="item">{{ item }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="pitchId">Piazzola</label>
+        <select id="pitchId" class="form-select" formControlName="pitchId" [class.is-invalid]="form.controls.pitchId.touched && form.controls.pitchId.invalid">
+          <option [ngValue]="0">Seleziona piazzola</option>
+          <option *ngFor="let pitch of pitches" [ngValue]="pitch.id">{{ pitch.pitchNumber }} - {{ pitch.pitchName }}</option>
+        </select>
+        <div class="invalid-feedback">Piazzola obbligatoria.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="campingEquipmentTypeId">Attrezzatura</label>
+        <select id="campingEquipmentTypeId" class="form-select" formControlName="campingEquipmentTypeId" [class.is-invalid]="form.controls.campingEquipmentTypeId.touched && form.controls.campingEquipmentTypeId.invalid">
+          <option [ngValue]="0">Seleziona tipologia</option>
+          <option *ngFor="let type of equipmentTypes" [ngValue]="type.id">{{ type.code }} - {{ type.name }}</option>
+        </select>
+        <div class="invalid-feedback">Tipologia obbligatoria.</div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label" for="vehiclePlate">Targa</label>
+        <input id="vehiclePlate" class="form-control" formControlName="vehiclePlate" [class.is-invalid]="form.controls.vehiclePlate.touched && form.controls.vehiclePlate.invalid" autocomplete="off" />
+        <div class="invalid-feedback">Targa max 20 caratteri, solo lettere, numeri, spazi e trattini.</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label" for="checkInDate">Check-in</label>
+        <input id="checkInDate" type="date" class="form-control" formControlName="checkInDate" [class.is-invalid]="form.controls.checkInDate.touched && form.controls.checkInDate.invalid" />
+        <div class="invalid-feedback">Data obbligatoria.</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label" for="checkOutDate">Check-out</label>
+        <input id="checkOutDate" type="date" class="form-control" formControlName="checkOutDate" [class.is-invalid]="form.controls.checkOutDate.touched && form.controls.checkOutDate.invalid" />
+        <div class="invalid-feedback">Data obbligatoria.</div>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label" for="adultsCount">Adulti</label>
+        <input id="adultsCount" type="number" class="form-control" formControlName="adultsCount" min="1" max="50" />
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label" for="childrenCount">Bambini</label>
+        <input id="childrenCount" type="number" class="form-control" formControlName="childrenCount" min="0" max="50" />
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label" for="petsCount">Animali</label>
+        <input id="petsCount" type="number" class="form-control" formControlName="petsCount" min="0" max="20" />
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="notes">Note</label>
+        <textarea id="notes" class="form-control" formControlName="notes" rows="4" [class.is-invalid]="form.controls.notes.touched && form.controls.notes.invalid"></textarea>
+        <div class="invalid-feedback">Note troppo lunghe.</div>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" routerLink="/reservations">Annulla</a>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSaving"></span>
+          Salva prenotazione
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

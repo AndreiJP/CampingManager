@@ -1,0 +1,78 @@
+<app-page-header title="Prenotazioni" subtitle="Elenco prenotazioni e stato soggiorni.">
+  <a class="btn btn-primary" routerLink="new">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nuova prenotazione
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row g-2 mb-3">
+      <div class="col-md-4 col-xl-3">
+        <input class="form-control" placeholder="Cerca codice, cliente o piazzola" [(ngModel)]="search" (keyup.enter)="loadReservations()" />
+      </div>
+      <div class="col-md-3 col-xl-2">
+        <select class="form-select" [(ngModel)]="status" (change)="loadReservations()">
+          <option value="">Tutti gli stati</option>
+          <option *ngFor="let item of statuses" [value]="item">{{ item }}</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="date" class="form-control" [(ngModel)]="fromDate" />
+      </div>
+      <div class="col-md-2">
+        <input type="date" class="form-control" [(ngModel)]="toDate" />
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-secondary" type="button" (click)="loadReservations()">Filtra</button>
+      </div>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <ng-container *ngIf="!isLoading && result">
+      <app-empty-state
+        *ngIf="result.items.length === 0"
+        icon="bi-calendar-check"
+        title="Nessuna prenotazione"
+        message="Le prenotazioni inserite dall API compariranno qui."
+      ></app-empty-state>
+
+      <div class="table-responsive" *ngIf="result.items.length > 0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Codice</th>
+              <th>Cliente</th>
+              <th>Piazzola</th>
+              <th>Periodo</th>
+              <th>Ospiti</th>
+              <th>Stato</th>
+              <th class="text-end">Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reservation of result.items">
+              <td class="fw-semibold">{{ reservation.reservationCode }}</td>
+              <td>
+                <div class="fw-semibold">{{ reservation.customerFullName }}</div>
+                <div class="small app-muted">{{ reservation.customerEmail }}</div>
+              </td>
+              <td>{{ reservation.pitchNumber }}</td>
+              <td>{{ reservation.checkInDate | date: 'dd/MM/yyyy' }} - {{ reservation.checkOutDate | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ reservation.adultsCount + reservation.childrenCount }}</td>
+              <td><span class="badge" [ngClass]="statusClass(reservation.status)">{{ reservation.status }}</span></td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a class="btn btn-outline-secondary" [routerLink]="[reservation.id, 'edit']">Modifica</a>
+                  <button class="btn btn-outline-danger" type="button" (click)="deleteReservation(reservation)">Elimina</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

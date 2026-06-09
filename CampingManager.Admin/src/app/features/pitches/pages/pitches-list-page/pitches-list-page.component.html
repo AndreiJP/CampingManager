@@ -1,0 +1,68 @@
+<app-page-header title="Piazzole" subtitle="Catalogo piazzole disponibili alla prenotazione.">
+  <a class="btn btn-primary" routerLink="new">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nuova piazzola
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row g-2 mb-3">
+      <div class="col-md-5 col-lg-4">
+        <input class="form-control" placeholder="Cerca numero o nome" [(ngModel)]="search" (keyup.enter)="loadPitches()" />
+      </div>
+      <div class="col-md-3 col-lg-2">
+        <select class="form-select" [(ngModel)]="isActive" (change)="loadPitches()">
+          <option value="">Tutte</option>
+          <option value="true">Attive</option>
+          <option value="false">Disattive</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-secondary" type="button" (click)="loadPitches()">Cerca</button>
+      </div>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <ng-container *ngIf="!isLoading && result">
+      <app-empty-state
+        *ngIf="result.items.length === 0"
+        icon="bi-grid-3x3-gap"
+        title="Nessuna piazzola"
+        message="Aggiungi le piazzole del campeggio per iniziare."
+      ></app-empty-state>
+
+      <div class="table-responsive" *ngIf="result.items.length > 0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Numero</th>
+              <th>Nome</th>
+              <th>Stato</th>
+              <th class="text-end">Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pitch of result.items">
+              <td class="fw-semibold">{{ pitch.pitchNumber }}</td>
+              <td>{{ pitch.pitchName }}</td>
+              <td>
+                <span class="badge" [class.text-bg-success]="pitch.isActive" [class.text-bg-secondary]="!pitch.isActive">
+                  {{ pitch.isActive ? 'Attiva' : 'Disattiva' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a class="btn btn-outline-secondary" [routerLink]="[pitch.id, 'edit']">Modifica</a>
+                  <button class="btn btn-outline-danger" type="button" (click)="deletePitch(pitch)">Elimina</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

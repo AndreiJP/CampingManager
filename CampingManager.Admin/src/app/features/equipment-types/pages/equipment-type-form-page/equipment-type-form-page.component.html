@@ -1,0 +1,45 @@
+<app-page-header
+  [title]="isEditMode ? 'Modifica tipologia' : 'Nuova tipologia'"
+  subtitle="Gestisci le tipologie di attrezzatura usate nelle prenotazioni."
+>
+  <a class="btn btn-outline-secondary" routerLink="/equipment-types">
+    <i class="bi bi-arrow-left me-1"></i>
+    Torna alla lista
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="save()" class="row g-3" novalidate>
+      <div class="col-md-4">
+        <label class="form-label" for="code">Codice</label>
+        <input id="code" class="form-control" formControlName="code" [class.is-invalid]="form.controls.code.touched && form.controls.code.invalid" autocomplete="off" />
+        <div class="invalid-feedback">Codice obbligatorio, max 30 caratteri, solo lettere, numeri e trattini.</div>
+      </div>
+
+      <div class="col-md-8">
+        <label class="form-label" for="name">Nome</label>
+        <input id="name" class="form-control" formControlName="name" [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid" autocomplete="off" />
+        <div class="invalid-feedback">Nome obbligatorio, max 100 caratteri.</div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch">
+          <input id="isActive" class="form-check-input" type="checkbox" formControlName="isActive" />
+          <label class="form-check-label" for="isActive">Tipologia attiva</label>
+        </div>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" routerLink="/equipment-types">Annulla</a>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSaving"></span>
+          Salva tipologia
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

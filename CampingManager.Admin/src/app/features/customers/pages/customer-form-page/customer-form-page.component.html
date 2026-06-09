@@ -1,0 +1,50 @@
+<app-page-header
+  [title]="isEditMode ? 'Modifica cliente' : 'Nuovo cliente'"
+  subtitle="Gestisci anagrafica e contatti del cliente."
+>
+  <a class="btn btn-outline-secondary" routerLink="/customers">
+    <i class="bi bi-arrow-left me-1"></i>
+    Torna alla lista
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="save()" class="row g-3" novalidate>
+      <div class="col-md-6">
+        <label class="form-label" for="firstName">Nome</label>
+        <input id="firstName" class="form-control" formControlName="firstName" [class.is-invalid]="form.controls.firstName.touched && form.controls.firstName.invalid" />
+        <div class="invalid-feedback">Nome obbligatorio, max 100 caratteri.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="lastName">Cognome</label>
+        <input id="lastName" class="form-control" formControlName="lastName" [class.is-invalid]="form.controls.lastName.touched && form.controls.lastName.invalid" />
+        <div class="invalid-feedback">Cognome obbligatorio, max 100 caratteri.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="email">Email</label>
+        <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid" />
+        <div class="invalid-feedback">Inserisci una email valida.</div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label" for="phoneNumber">Telefono</label>
+        <input id="phoneNumber" class="form-control" formControlName="phoneNumber" [class.is-invalid]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid" />
+        <div class="invalid-feedback">Telefono troppo lungo.</div>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" routerLink="/customers">Annulla</a>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSaving"></span>
+          Salva cliente
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

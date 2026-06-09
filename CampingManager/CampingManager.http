@@ -1,0 +1,6 @@
+@CampingManager_HostAddress = http://localhost:5117
+
+GET {{CampingManager_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

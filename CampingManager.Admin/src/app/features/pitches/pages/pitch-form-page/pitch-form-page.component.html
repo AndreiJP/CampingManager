@@ -1,0 +1,57 @@
+<app-page-header
+  [title]="isEditMode ? 'Modifica piazzola' : 'Nuova piazzola'"
+  subtitle="Gestisci numero, nome e disponibilita della piazzola."
+>
+  <a class="btn btn-outline-secondary" routerLink="/pitches">
+    <i class="bi bi-arrow-left me-1"></i>
+    Torna alla lista
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading"><span class="spinner-border"></span></div>
+
+    <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="save()" class="row g-3" novalidate>
+      <div class="col-md-4">
+        <label class="form-label" for="pitchNumber">Numero</label>
+        <input
+          id="pitchNumber"
+          class="form-control"
+          formControlName="pitchNumber"
+          [class.is-invalid]="form.controls.pitchNumber.touched && form.controls.pitchNumber.invalid"
+          autocomplete="off"
+        />
+        <div class="invalid-feedback">Numero obbligatorio, max 20 caratteri, solo lettere, numeri e trattini.</div>
+      </div>
+
+      <div class="col-md-8">
+        <label class="form-label" for="pitchName">Nome</label>
+        <input
+          id="pitchName"
+          class="form-control"
+          formControlName="pitchName"
+          [class.is-invalid]="form.controls.pitchName.touched && form.controls.pitchName.invalid"
+          autocomplete="off"
+        />
+        <div class="invalid-feedback">Nome obbligatorio, max 100 caratteri.</div>
+      </div>
+
+      <div class="col-12">
+        <div class="form-check form-switch">
+          <input id="isActive" class="form-check-input" type="checkbox" formControlName="isActive" />
+          <label class="form-check-label" for="isActive">Piazzola attiva</label>
+        </div>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" routerLink="/pitches">Annulla</a>
+        <button class="btn btn-primary" type="submit" [disabled]="isSaving">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSaving"></span>
+          Salva piazzola
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<app-page-header title="Clienti" subtitle="Anagrafica clienti e contatti.">
+  <a class="btn btn-primary" routerLink="new">
+    <i class="bi bi-plus-lg me-1"></i>
+    Nuovo cliente
+  </a>
+</app-page-header>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row g-2 mb-3">
+      <div class="col-md-6 col-lg-4">
+        <input
+          type="search"
+          class="form-control"
+          placeholder="Cerca nome, email o telefono"
+          [(ngModel)]="search"
+          (keyup.enter)="loadCustomers()"
+        />
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-outline-secondary" type="button" (click)="loadCustomers()">Cerca</button>
+      </div>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="text-center py-4" *ngIf="isLoading">
+      <span class="spinner-border"></span>
+    </div>
+
+    <ng-container *ngIf="!isLoading && result">
+      <app-empty-state
+        *ngIf="result.items.length === 0"
+        icon="bi-people"
+        title="Nessun cliente"
+        message="I clienti creati dall API compariranno qui."
+      ></app-empty-state>
+
+      <div class="table-responsive" *ngIf="result.items.length > 0">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th class="text-end">Azioni</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of result.items">
+              <td class="fw-semibold">{{ customer.firstName }} {{ customer.lastName }}</td>
+              <td>{{ customer.email }}</td>
+              <td>{{ customer.phoneNumber || '-' }}</td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm">
+                  <a class="btn btn-outline-secondary" [routerLink]="[customer.id, 'edit']">Modifica</a>
+                  <button class="btn btn-outline-danger" type="button" (click)="deleteCustomer(customer)">Elimina</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>
