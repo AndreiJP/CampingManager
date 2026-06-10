@@ -4,25 +4,84 @@ Soluzione composta da:
 
 - `CampingManager`: API ASP.NET Core 8 con EF Core e SQLite.
 - `CampingManager.Admin`: frontend Angular per area amministrativa.
+- `CampingManager.Web`: frontend Angular pubblico del sito.
 - `CampingManager.Tests`: test xUnit sui servizi applicativi critici.
 
-## Avvio sviluppo
+## Prerequisiti
 
-API:
+- .NET SDK 8.
+- Node.js e npm compatibili con Angular 22.
+- EF Core CLI, se devi applicare migration:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+## Avvio sviluppo completo
+
+Aprire tre terminali separati: uno per il backend, uno per la dashboard admin e uno per il sito pubblico.
+
+### Backend API
+
+Avvio:
 
 ```bash
 dotnet run --project CampingManager/CampingManager.csproj
 ```
 
-Frontend:
+URL principali:
+
+- API: `http://localhost:5117/api`
+- Swagger: `http://localhost:5117/swagger`
+
+Il profilo `http` usa `http://localhost:5117`.
+Il profilo `https` espone anche `https://localhost:7125`.
+
+### Frontend admin
+
+Installazione dipendenze:
 
 ```bash
 cd CampingManager.Admin
 npm install
+```
+
+Avvio:
+
+```bash
 npm start
 ```
 
-In sviluppo il frontend usa `http://localhost:5117/api`.
+URL:
+
+- Admin: `http://localhost:4200`
+
+In sviluppo la dashboard admin usa `http://localhost:5117/api`, configurato in:
+
+```text
+CampingManager.Admin/src/environments/environment.development.ts
+```
+
+### Frontend pubblico
+
+Installazione dipendenze:
+
+```bash
+cd CampingManager.Web
+npm install
+```
+
+Avvio consigliato:
+
+```bash
+npm start -- --port 4300
+```
+
+URL:
+
+- Sito pubblico: `http://localhost:4300`
+
+Nota: Angular usa `4200` come porta predefinita. Se admin e web sono avviati insieme, lascia `4200` all'admin e usa `4300` per il sito pubblico.
 
 ## Database
 
@@ -63,9 +122,24 @@ Il frontend production usa `apiBaseUrl: "/api"` e quindi si aspetta API e SPA di
 
 ## Verifiche
 
+Backend:
+
 ```bash
 dotnet test CampingManager.sln
+```
+
+Admin:
+
+```bash
 cd CampingManager.Admin
+npm test -- --watch=false
+npm run build
+```
+
+Web:
+
+```bash
+cd CampingManager.Web
 npm test -- --watch=false
 npm run build
 ```
