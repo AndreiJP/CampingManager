@@ -1,7 +1,8 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { buildHttpParams } from '../../../core/http/api-params';
 import { PagedResult } from '../../../shared/models/paged-result';
 import { Customer, SaveCustomerRequest } from '../models/customer.model';
 
@@ -18,13 +19,7 @@ export class CustomersService {
   constructor(private readonly http: HttpClient) {}
 
   getCustomers(query: CustomerQuery): Observable<PagedResult<Customer>> {
-    let params = new HttpParams()
-      .set('pageNumber', query.pageNumber)
-      .set('pageSize', query.pageSize);
-
-    if (query.search) {
-      params = params.set('search', query.search);
-    }
+    const params = buildHttpParams(query);
 
     return this.http.get<PagedResult<Customer>>(this.resourceUrl, { params });
   }

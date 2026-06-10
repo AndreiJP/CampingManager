@@ -4,5 +4,7 @@ namespace CampingManager.Authorization
     {
         public const string AdminRole = "Admin";
         public const string AdminPolicy = "AdminOnly";
+        public const string AccessTokenCookieName = "CampingManager.Admin.AccessToken";
+        public const string SetupTokenHeaderName = "X-Setup-Token";
     }
 }

@@ -61,6 +61,22 @@ namespace CampingManager.Migrations
                     b.ToTable("AdminUsers");
                 });
 
+            modelBuilder.Entity("CampingManager.Models.AppLock", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("AppLocks");
+                });
+
             modelBuilder.Entity("CampingManager.Models.CampingEquipmentType", b =>
                 {
                     b.Property<int>("Id")
@@ -172,6 +188,36 @@ namespace CampingManager.Migrations
                     b.ToTable("Pitches");
                 });
 
+            modelBuilder.Entity("CampingManager.Models.PitchOccupancy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime>("OccupancyDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PitchId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReservationId");
+
+                    b.HasIndex("PitchId", "OccupancyDate")
+                        .IsUnique();
+
+                    b.ToTable("PitchOccupancies");
+                });
+
             modelBuilder.Entity("CampingManager.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -244,6 +290,25 @@ namespace CampingManager.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("CampingManager.Models.PitchOccupancy", b =>
+                {
+                    b.HasOne("CampingManager.Models.Pitch", "Pitch")
+                        .WithMany()
+                        .HasForeignKey("PitchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CampingManager.Models.Reservation", "Reservation")
+                        .WithMany("PitchOccupancies")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pitch");
+
+                    b.Navigation("Reservation");
+                });
+
             modelBuilder.Entity("CampingManager.Models.Reservation", b =>
                 {
                     b.HasOne("CampingManager.Models.CampingEquipmentType", "CampingEquipmentType")
@@ -269,6 +334,11 @@ namespace CampingManager.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Pitch");
+                });
+
+            modelBuilder.Entity("CampingManager.Models.Reservation", b =>
+                {
+                    b.Navigation("PitchOccupancies");
                 });
 #pragma warning restore 612, 618
         }

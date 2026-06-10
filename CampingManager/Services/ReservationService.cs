@@ -1,3 +1,4 @@
+using System.Data;
 using CampingManager.Data;
 using CampingManager.Dto;
 using CampingManager.Interfaces;
@@ -16,10 +17,14 @@ namespace CampingManager.Services
         ];
 
         private readonly AppDbContext _context;
+        private readonly IClock _clock;
+        private readonly ILogger<ReservationService> _logger;
 
-        public ReservationService(AppDbContext context)
+        public ReservationService(AppDbContext context, IClock clock, ILogger<ReservationService> logger)
         {
             _context = context;
+            _clock = clock;
+            _logger = logger;
         }
 
         public async Task<PagedResultDto<ReservationDto>> GetAllAsync(ReservationQueryDto queryDto)
@@ -55,14 +60,14 @@ namespace CampingManager.Services
 
             if (!string.IsNullOrWhiteSpace(queryDto.Search))
             {
-                var normalizedSearch = queryDto.Search.Trim().ToLower();
+                var searchPattern = $"%{queryDto.Search.Trim()}%";
 
                 query = query.Where(reservation =>
-                    reservation.ReservationCode.ToLower().Contains(normalizedSearch) ||
-                    reservation.Customer.FirstName.ToLower().Contains(normalizedSearch) ||
-                    reservation.Customer.LastName.ToLower().Contains(normalizedSearch) ||
-                    reservation.Customer.Email.ToLower().Contains(normalizedSearch) ||
-                    reservation.Pitch.PitchNumber.ToLower().Contains(normalizedSearch));
+                    EF.Functions.Like(reservation.ReservationCode, searchPattern) ||
+                    EF.Functions.Like(reservation.Customer.FirstName, searchPattern) ||
+                    EF.Functions.Like(reservation.Customer.LastName, searchPattern) ||
+                    EF.Functions.Like(reservation.Customer.Email, searchPattern) ||
+                    EF.Functions.Like(reservation.Pitch.PitchNumber, searchPattern));
             }
 
             return await query
@@ -120,18 +125,18 @@ namespace CampingManager.Services
                 })
                 .ToListAsync();
 
-            var blockingReservations = await _context.Reservations
+            var blockingReservations = await _context.PitchOccupancies
                 .AsNoTracking()
-                .Where(reservation =>
-                    reservation.Id != queryDto.ExcludeReservationId &&
-                    BlockingStatuses.Contains(reservation.Status) &&
-                    reservation.CheckInDate < checkOutDate &&
-                    checkInDate < reservation.CheckOutDate)
-                .Select(reservation => new
+                .Where(occupancy =>
+                    occupancy.ReservationId != queryDto.ExcludeReservationId &&
+                    occupancy.OccupancyDate >= checkInDate &&
+                    occupancy.OccupancyDate < checkOutDate)
+                .Select(occupancy => new
                 {
-                    reservation.PitchId,
-                    reservation.ReservationCode
+                    occupancy.PitchId,
+                    occupancy.Reservation.ReservationCode
                 })
+                .Distinct()
                 .ToListAsync();
 
             var blockingCodesByPitch = blockingReservations
@@ -197,6 +202,8 @@ namespace CampingManager.Services
 
         public async Task<ServiceResult<ReservationDto>> CreateAsync(CreateReservationDto dto)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
             var validation = await ValidateReservationAsync(
                 dto.ReservationCode,
                 dto.CustomerId,
@@ -214,7 +221,7 @@ namespace CampingManager.Services
                     validation.ErrorMessage!);
             }
 
-            var now = DateTime.UtcNow;
+            var now = _clock.UtcNow;
             var reservation = new Reservation
             {
                 ReservationCode = NormalizeCode(dto.ReservationCode),
@@ -234,16 +241,16 @@ namespace CampingManager.Services
             };
 
             _context.Reservations.Add(reservation);
+            AddOccupancyRows(reservation);
 
             try
             {
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException exception)
             {
-                return ServiceResult<ReservationDto>.Failure(
-                    ServiceErrorType.Conflict,
-                    $"A reservation with code '{reservation.ReservationCode}' already exists.");
+                return ReservationSaveConflict(reservation.ReservationCode, exception);
             }
 
             var created = await GetByIdAsync(reservation.Id);
@@ -253,6 +260,8 @@ namespace CampingManager.Services
 
         public async Task<ServiceResult<ReservationDto>> UpdateAsync(int id, UpdateReservationDto dto)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
             var reservation = await _context.Reservations.FindAsync(id);
 
             if (reservation is null)
@@ -300,17 +309,17 @@ namespace CampingManager.Services
             reservation.VehiclePlate = NormalizeOptional(dto.VehiclePlate);
             reservation.Status = targetStatus;
             reservation.Notes = NormalizeOptional(dto.Notes);
-            reservation.UpdatedAt = DateTime.UtcNow;
+            reservation.UpdatedAt = _clock.UtcNow;
 
             try
             {
+                await ReplaceOccupancyRowsAsync(reservation);
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException exception)
             {
-                return ServiceResult<ReservationDto>.Failure(
-                    ServiceErrorType.Conflict,
-                    $"A reservation with code '{reservation.ReservationCode}' already exists.");
+                return ReservationSaveConflict(reservation.ReservationCode, exception);
             }
 
             var updated = await GetByIdAsync(id);
@@ -369,6 +378,8 @@ namespace CampingManager.Services
 
         private async Task<ServiceResult<ReservationDto>> ChangeStatusAsync(int id, ReservationStatus targetStatus)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
             var reservation = await _context.Reservations.FindAsync(id);
 
             if (reservation is null)
@@ -409,9 +420,18 @@ namespace CampingManager.Services
             }
 
             reservation.Status = targetStatus;
-            reservation.UpdatedAt = DateTime.UtcNow;
+            reservation.UpdatedAt = _clock.UtcNow;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await ReplaceOccupancyRowsAsync(reservation);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException exception)
+            {
+                return ReservationSaveConflict(reservation.ReservationCode, exception);
+            }
 
             var updated = await GetByIdAsync(id);
 
@@ -466,7 +486,7 @@ namespace CampingManager.Services
                     "Check-out date must be after check-in date.");
             }
 
-            if (normalizedCheckInDate < DateTime.UtcNow.Date)
+            if (normalizedCheckInDate < _clock.UtcToday)
             {
                 return ServiceResult<bool>.Failure(
                     ServiceErrorType.Validation,
@@ -544,13 +564,67 @@ namespace CampingManager.Services
             DateTime checkOutDate,
             int? reservationIdToExclude)
         {
-            return await _context.Reservations
-                .AnyAsync(reservation =>
-                    reservation.Id != reservationIdToExclude &&
-                    reservation.PitchId == pitchId &&
-                    BlockingStatuses.Contains(reservation.Status) &&
-                    reservation.CheckInDate < checkOutDate &&
-                    checkInDate < reservation.CheckOutDate);
+            return await _context.PitchOccupancies
+                .AnyAsync(occupancy =>
+                    occupancy.ReservationId != reservationIdToExclude &&
+                    occupancy.PitchId == pitchId &&
+                    occupancy.OccupancyDate >= checkInDate.Date &&
+                    occupancy.OccupancyDate < checkOutDate.Date);
+        }
+
+        private async Task ReplaceOccupancyRowsAsync(Reservation reservation)
+        {
+            var existingOccupancyRows = await _context.PitchOccupancies
+                .Where(occupancy => occupancy.ReservationId == reservation.Id)
+                .ToListAsync();
+
+            _context.PitchOccupancies.RemoveRange(existingOccupancyRows);
+
+            if (existingOccupancyRows.Count > 0)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            AddOccupancyRows(reservation);
+        }
+
+        private void AddOccupancyRows(Reservation reservation)
+        {
+            if (!BlockingStatuses.Contains(reservation.Status))
+            {
+                return;
+            }
+
+            foreach (var occupancyDate in GetOccupiedDates(reservation.CheckInDate, reservation.CheckOutDate))
+            {
+                _context.PitchOccupancies.Add(new PitchOccupancy
+                {
+                    Reservation = reservation,
+                    PitchId = reservation.PitchId,
+                    OccupancyDate = occupancyDate,
+                    CreatedAt = _clock.UtcNow
+                });
+            }
+        }
+
+        private ServiceResult<ReservationDto> ReservationSaveConflict(string reservationCode, DbUpdateException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Reservation {ReservationCode} could not be saved because of a database conflict.",
+                reservationCode);
+
+            return ServiceResult<ReservationDto>.Failure(
+                ServiceErrorType.Conflict,
+                $"Reservation '{reservationCode}' could not be saved because the code already exists or the selected pitch is no longer available.");
+        }
+
+        private static IEnumerable<DateTime> GetOccupiedDates(DateTime checkInDate, DateTime checkOutDate)
+        {
+            for (var date = checkInDate.Date; date < checkOutDate.Date; date = date.AddDays(1))
+            {
+                yield return date;
+            }
         }
 
         private static bool CanTransition(ReservationStatus currentStatus, ReservationStatus targetStatus)

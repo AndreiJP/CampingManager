@@ -1,0 +1,24 @@
+<nav class="d-flex align-items-center justify-content-between mt-3" *ngIf="canShow" aria-label="Paginazione">
+  <div class="small app-muted">
+    Pagina {{ result?.pageNumber }} di {{ result?.totalPages }} - {{ result?.totalCount }} risultati
+  </div>
+
+  <div class="btn-group btn-group-sm">
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      [disabled]="!result?.hasPreviousPage"
+      (click)="goToPage((result?.pageNumber ?? 1) - 1)"
+    >
+      Precedente
+    </button>
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      [disabled]="!result?.hasNextPage"
+      (click)="goToPage((result?.pageNumber ?? 1) + 1)"
+    >
+      Successiva
+    </button>
+  </div>
+</nav>

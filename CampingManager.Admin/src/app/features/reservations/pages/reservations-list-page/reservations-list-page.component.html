@@ -65,6 +65,38 @@
               <td><span class="badge" [ngClass]="statusClass(reservation.status)">{{ reservation.status }}</span></td>
               <td class="text-end">
                 <div class="btn-group btn-group-sm">
+                  <button
+                    *ngIf="reservation.status === 'Pending'"
+                    class="btn btn-outline-primary"
+                    type="button"
+                    (click)="confirmReservation(reservation)"
+                  >
+                    Conferma
+                  </button>
+                  <button
+                    *ngIf="reservation.status === 'Confirmed'"
+                    class="btn btn-outline-success"
+                    type="button"
+                    (click)="checkInReservation(reservation)"
+                  >
+                    Check-in
+                  </button>
+                  <button
+                    *ngIf="reservation.status === 'CheckedIn'"
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    (click)="checkOutReservation(reservation)"
+                  >
+                    Check-out
+                  </button>
+                  <button
+                    *ngIf="reservation.status === 'Pending' || reservation.status === 'Confirmed'"
+                    class="btn btn-outline-warning"
+                    type="button"
+                    (click)="cancelReservation(reservation)"
+                  >
+                    Annulla
+                  </button>
                   <a class="btn btn-outline-secondary" [routerLink]="[reservation.id, 'edit']">Modifica</a>
                   <button class="btn btn-outline-danger" type="button" (click)="deleteReservation(reservation)">Elimina</button>
                 </div>
@@ -73,6 +105,8 @@
           </tbody>
         </table>
       </div>
+
+      <app-paginator [result]="result" (pageChange)="loadReservations($event)"></app-paginator>
     </ng-container>
   </div>
 </div>

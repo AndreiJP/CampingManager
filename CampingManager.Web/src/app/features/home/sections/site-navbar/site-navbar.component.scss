@@ -1,0 +1,113 @@
+.site-navbar {
+  min-height: 5.5rem;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 4px solid var(--site-green);
+  box-shadow: 0 1px 18px rgba(24, 42, 27, 0.08);
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--site-green);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.65rem, 2.4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.site-brand:hover {
+  color: var(--site-green);
+}
+
+.site-brand-mark {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  color: var(--site-green);
+  font-size: 2rem;
+}
+
+.nav-link {
+  color: #101811;
+  font-weight: 600;
+  padding: 0.75rem 0.25rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--site-green);
+}
+
+.nav-link.active::after {
+  display: block;
+  width: 2.25rem;
+  height: 2px;
+  margin-top: 0.55rem;
+  background: var(--site-green);
+  content: "";
+}
+
+.site-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-language {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #101811;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.flag-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #2f7d42 0 33%, #fff 33% 66%, #c9473d 66% 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.site-booking-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 3rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--site-green);
+  color: #fff;
+  font-weight: 700;
+  border: 0;
+}
+
+.site-booking-btn:hover {
+  background: var(--site-green-soft);
+  color: #fff;
+}
+
+@media (max-width: 991.98px) {
+  .site-navbar {
+    min-height: auto;
+  }
+
+  .site-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 0 0.5rem;
+  }
+
+  .site-language,
+  .site-booking-btn {
+    justify-content: center;
+  }
+
+  .nav-link.active::after {
+    display: none;
+  }
+}

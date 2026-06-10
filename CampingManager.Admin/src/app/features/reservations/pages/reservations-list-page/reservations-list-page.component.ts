@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
+import { ConfirmationService } from '../../../../core/confirmation/confirmation.service';
+import { formatApiError } from '../../../../core/http/api-error';
 import { PagedResult } from '../../../../shared/models/paged-result';
 import { Reservation, ReservationStatus } from '../../models/reservation.model';
 import { ReservationsService } from '../../services/reservations.service';
@@ -23,6 +25,7 @@ export class ReservationsListPageComponent implements OnInit {
   constructor(
     private readonly reservationsService: ReservationsService,
     private readonly changeDetector: ChangeDetectorRef,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -53,8 +56,11 @@ export class ReservationsListPageComponent implements OnInit {
         next: (result) => {
           this.result = result;
         },
-        error: () => {
-          this.errorMessage = 'Impossibile caricare le prenotazioni. Verifica che API e login siano attivi.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile caricare le prenotazioni. Verifica che API e login siano attivi.',
+          );
         },
       });
   }
@@ -73,7 +79,9 @@ export class ReservationsListPageComponent implements OnInit {
   }
 
   deleteReservation(reservation: Reservation): void {
-    const confirmed = window.confirm(`Eliminare la prenotazione ${reservation.reservationCode}?`);
+    const confirmed = this.confirmationService.confirm(
+      `Eliminare la prenotazione ${reservation.reservationCode}?`,
+    );
 
     if (!confirmed) {
       return;
@@ -81,8 +89,54 @@ export class ReservationsListPageComponent implements OnInit {
 
     this.reservationsService.deleteReservation(reservation.id).subscribe({
       next: () => this.loadReservations(this.result?.pageNumber ?? 1),
-      error: () => {
-        this.errorMessage = 'Impossibile eliminare la prenotazione.';
+      error: (error: unknown) => {
+        this.errorMessage = formatApiError(error, 'Impossibile eliminare la prenotazione.');
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  confirmReservation(reservation: Reservation): void {
+    this.runStatusAction(
+      () => this.reservationsService.confirmReservation(reservation.id),
+      'Impossibile confermare la prenotazione.',
+    );
+  }
+
+  checkInReservation(reservation: Reservation): void {
+    this.runStatusAction(
+      () => this.reservationsService.checkInReservation(reservation.id),
+      'Impossibile registrare il check-in.',
+    );
+  }
+
+  checkOutReservation(reservation: Reservation): void {
+    this.runStatusAction(
+      () => this.reservationsService.checkOutReservation(reservation.id),
+      'Impossibile registrare il check-out.',
+    );
+  }
+
+  cancelReservation(reservation: Reservation): void {
+    const confirmed = this.confirmationService.confirm(
+      `Annullare la prenotazione ${reservation.reservationCode}?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.runStatusAction(
+      () => this.reservationsService.cancelReservation(reservation.id),
+      'Impossibile annullare la prenotazione.',
+    );
+  }
+
+  private runStatusAction(request: () => ReturnType<ReservationsService['confirmReservation']>, fallbackMessage: string): void {
+    request().subscribe({
+      next: () => this.loadReservations(this.result?.pageNumber ?? 1),
+      error: (error: unknown) => {
+        this.errorMessage = formatApiError(error, fallbackMessage);
         this.changeDetector.markForCheck();
       },
     });

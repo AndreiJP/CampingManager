@@ -1,0 +1,158 @@
+<section class="container-xxl">
+  <div class="availability-card shadow-sm">
+    <form [formGroup]="availabilityForm" (ngSubmit)="verifyAvailability()" novalidate>
+      <h2>Verifica disponibilita</h2>
+
+      <div class="availability-grid">
+        <div class="field-card">
+          <i class="bi bi-calendar3"></i>
+          <div>
+            <label for="checkInDate">Check-in</label>
+            <input
+              id="checkInDate"
+              type="date"
+              class="form-control"
+              formControlName="checkInDate"
+              [attr.min]="minDate"
+              [class.is-invalid]="availabilityForm.controls.checkInDate.touched && availabilityForm.controls.checkInDate.invalid"
+            />
+          </div>
+        </div>
+
+        <div class="field-card">
+          <i class="bi bi-calendar3"></i>
+          <div>
+            <label for="checkOutDate">Check-out</label>
+            <input
+              id="checkOutDate"
+              type="date"
+              class="form-control"
+              formControlName="checkOutDate"
+              [attr.min]="availabilityForm.controls.checkInDate.value || minDate"
+              [class.is-invalid]="availabilityForm.controls.checkOutDate.touched && availabilityForm.controls.checkOutDate.invalid"
+            />
+          </div>
+        </div>
+
+        <div class="field-card guests-card">
+          <i class="bi bi-person"></i>
+          <div>
+            <label>Ospiti</label>
+            <div class="guest-controls">
+              <input
+                type="number"
+                class="form-control"
+                aria-label="Adulti"
+                formControlName="adultsCount"
+                min="1"
+                max="12"
+              />
+              <span>adulti</span>
+              <input
+                type="number"
+                class="form-control"
+                aria-label="Bambini"
+                formControlName="childrenCount"
+                min="0"
+                max="12"
+              />
+              <span>bambini</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <i class="bi bi-signpost-2"></i>
+          <div>
+            <label for="accommodationType">Sistemazione</label>
+            <select id="accommodationType" class="form-select" formControlName="accommodationType">
+              <option *ngFor="let option of accommodationOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn availability-submit" type="submit">
+          Verifica disponibilita
+        </button>
+      </div>
+
+      <div class="alert alert-danger mt-3 mb-0" *ngIf="errorMessage">{{ errorMessage }}</div>
+    </form>
+
+    <div class="booking-panel" *ngIf="availabilityChecked">
+      <div class="booking-summary">
+        <span class="badge rounded-pill">Disponibilita da confermare</span>
+        <h3>Completa la richiesta di prenotazione</h3>
+        <p>
+          {{ availabilityForm.controls.checkInDate.value | date: 'dd/MM/yyyy' }}
+          -
+          {{ availabilityForm.controls.checkOutDate.value | date: 'dd/MM/yyyy' }}
+          - {{ guestSummary }} - {{ selectedAccommodationLabel }}
+        </p>
+      </div>
+
+      <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()" class="booking-form" novalidate>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="firstName">Nome</label>
+            <input
+              id="firstName"
+              class="form-control"
+              formControlName="firstName"
+              [class.is-invalid]="bookingForm.controls.firstName.touched && bookingForm.controls.firstName.invalid"
+            />
+            <div class="invalid-feedback">Nome obbligatorio.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="lastName">Cognome</label>
+            <input
+              id="lastName"
+              class="form-control"
+              formControlName="lastName"
+              [class.is-invalid]="bookingForm.controls.lastName.touched && bookingForm.controls.lastName.invalid"
+            />
+            <div class="invalid-feedback">Cognome obbligatorio.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              [class.is-invalid]="bookingForm.controls.email.touched && bookingForm.controls.email.invalid"
+            />
+            <div class="invalid-feedback">Inserisci una email valida.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="phoneNumber">Telefono</label>
+            <input
+              id="phoneNumber"
+              class="form-control"
+              formControlName="phoneNumber"
+              [class.is-invalid]="bookingForm.controls.phoneNumber.touched && bookingForm.controls.phoneNumber.invalid"
+            />
+            <div class="invalid-feedback">Telefono obbligatorio.</div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="notes">Note</label>
+            <textarea id="notes" class="form-control" formControlName="notes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="booking-actions">
+          <p class="booking-success" *ngIf="bookingSubmitted">
+            Richiesta salvata in bozza. Nel prossimo step collegheremo l'invio all'API pubblica.
+          </p>
+          <button class="btn availability-submit" type="submit">Prenota ora</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

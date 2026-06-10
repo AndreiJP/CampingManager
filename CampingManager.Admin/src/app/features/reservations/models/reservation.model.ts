@@ -38,3 +38,11 @@ export interface SaveReservationRequest {
   status: ReservationStatus;
   notes: string | null;
 }
+
+export interface PitchAvailability {
+  pitchId: number;
+  pitchNumber: string;
+  pitchName: string;
+  isAvailable: boolean;
+  blockingReservationCodes: string[];
+}

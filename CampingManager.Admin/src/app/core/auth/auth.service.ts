@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, finalize, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AdminUser, AuthResponse, LoginRequest } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly tokenKey = 'campingManager.admin.accessToken';
   private readonly userKey = 'campingManager.admin.user';
   private readonly expiresKey = 'campingManager.admin.expiresAt';
 
@@ -23,36 +22,49 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.userKey);
-    localStorage.removeItem(this.expiresKey);
-    void this.router.navigate(['/login']);
-  }
-
-  getAccessToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    this.http
+      .post<void>(`${environment.apiBaseUrl}/Auth/logout`, {})
+      .pipe(finalize(() => this.clearSessionAndRedirect()))
+      .subscribe({ error: () => undefined });
   }
 
   getCurrentUser(): AdminUser | null {
-    const rawUser = localStorage.getItem(this.userKey);
+    const rawUser = sessionStorage.getItem(this.userKey);
 
-    return rawUser ? (JSON.parse(rawUser) as AdminUser) : null;
+    if (!rawUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(rawUser) as AdminUser;
+    } catch {
+      this.clearSession();
+      return null;
+    }
   }
 
   isAuthenticated(): boolean {
-    const token = this.getAccessToken();
-    const expiresAt = localStorage.getItem(this.expiresKey);
+    const expiresAt = sessionStorage.getItem(this.expiresKey);
 
-    if (!token || !expiresAt) {
+    if (!expiresAt) {
       return false;
     }
 
     return new Date(expiresAt).getTime() > Date.now();
   }
 
+  clearSessionAndRedirect(): void {
+    this.clearSession();
+    void this.router.navigate(['/login']);
+  }
+
   private storeSession(response: AuthResponse): void {
-    localStorage.setItem(this.tokenKey, response.accessToken);
-    localStorage.setItem(this.userKey, JSON.stringify(response.user));
-    localStorage.setItem(this.expiresKey, response.expiresAt);
+    sessionStorage.setItem(this.userKey, JSON.stringify(response.user));
+    sessionStorage.setItem(this.expiresKey, response.expiresAt);
+  }
+
+  private clearSession(): void {
+    sessionStorage.removeItem(this.userKey);
+    sessionStorage.removeItem(this.expiresKey);
   }
 }

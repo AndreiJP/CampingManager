@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { formatApiError } from '../../../../core/http/api-error';
 import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
@@ -42,8 +43,8 @@ export class LoginPageComponent {
       }))
       .subscribe({
         next: () => void this.router.navigate(['/dashboard']),
-        error: () => {
-          this.errorMessage = 'Credenziali non valide o API non raggiungibile.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(error, 'Credenziali non valide o API non raggiungibile.');
           this.changeDetector.markForCheck();
         },
       });

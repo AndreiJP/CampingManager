@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
+import { formatApiError } from '../../../../core/http/api-error';
 import { Customer } from '../../../customers/models/customer.model';
 import { CustomersService } from '../../../customers/services/customers.service';
 import { EquipmentType } from '../../../equipment-types/models/equipment-type.model';
@@ -95,8 +96,11 @@ export class ReservationFormPageComponent implements OnInit {
       }))
       .subscribe({
         next: () => void this.router.navigate(['/reservations']),
-        error: () => {
-          this.errorMessage = 'Impossibile salvare la prenotazione. Controlla disponibilita e dati inseriti.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile salvare la prenotazione. Controlla disponibilita e dati inseriti.',
+          );
           this.changeDetector.markForCheck();
         },
       });
@@ -148,8 +152,8 @@ export class ReservationFormPageComponent implements OnInit {
             });
           }
         },
-        error: () => {
-          this.errorMessage = 'Impossibile caricare i dati necessari alla prenotazione.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(error, 'Impossibile caricare i dati necessari alla prenotazione.');
         },
       });
   }

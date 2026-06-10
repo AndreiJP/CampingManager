@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { formatApiError } from '../../../../core/http/api-error';
 import { SaveEquipmentTypeRequest } from '../../models/equipment-type.model';
 import { EquipmentTypesService } from '../../services/equipment-types.service';
 
@@ -64,8 +65,11 @@ export class EquipmentTypeFormPageComponent implements OnInit {
       }))
       .subscribe({
         next: () => void this.router.navigate(['/equipment-types']),
-        error: () => {
-          this.errorMessage = 'Impossibile salvare la tipologia. Controlla i dati inseriti.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile salvare la tipologia. Controlla i dati inseriti.',
+          );
           this.changeDetector.markForCheck();
         },
       });
@@ -89,8 +93,8 @@ export class EquipmentTypeFormPageComponent implements OnInit {
             isActive: type.isActive,
           });
         },
-        error: () => {
-          this.errorMessage = 'Tipologia non trovata o API non raggiungibile.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(error, 'Tipologia non trovata o API non raggiungibile.');
         },
       });
   }

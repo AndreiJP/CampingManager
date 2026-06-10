@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { formatApiError } from '../../../../core/http/api-error';
 import { SaveCustomerRequest } from '../../models/customer.model';
 import { CustomersService } from '../../services/customers.service';
 
@@ -69,8 +70,11 @@ export class CustomerFormPageComponent implements OnInit {
       }))
       .subscribe({
         next: () => void this.router.navigate(['/customers']),
-        error: () => {
-          this.errorMessage = 'Impossibile salvare il cliente. Controlla i dati inseriti.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile salvare il cliente. Controlla i dati inseriti.',
+          );
           this.changeDetector.markForCheck();
         },
       });
@@ -95,8 +99,8 @@ export class CustomerFormPageComponent implements OnInit {
             phoneNumber: customer.phoneNumber ?? '',
           });
         },
-        error: () => {
-          this.errorMessage = 'Cliente non trovato o API non raggiungibile.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(error, 'Cliente non trovato o API non raggiungibile.');
         },
       });
   }

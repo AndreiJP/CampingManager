@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Data;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using CampingManager.Authorization;
 using CampingManager.Data;
@@ -18,28 +20,44 @@ namespace CampingManager.Services
     {
         private readonly AppDbContext _context;
         private readonly JwtSettings _jwtSettings;
+        private readonly AdminBootstrapOptions _adminBootstrapOptions;
+        private readonly IClock _clock;
+        private readonly ILogger<AuthService> _logger;
         private readonly PasswordHasher<AdminUser> _passwordHasher;
 
-        public AuthService(AppDbContext context, IOptions<JwtSettings> jwtOptions)
+        public AuthService(
+            AppDbContext context,
+            IOptions<JwtSettings> jwtOptions,
+            IOptions<AdminBootstrapOptions> adminBootstrapOptions,
+            IClock clock,
+            ILogger<AuthService> logger)
         {
             _context = context;
             _jwtSettings = jwtOptions.Value;
+            _adminBootstrapOptions = adminBootstrapOptions.Value;
+            _clock = clock;
+            _logger = logger;
             _passwordHasher = new PasswordHasher<AdminUser>();
         }
 
-        public async Task<ServiceResult<AuthResponseDto>> BootstrapAdminAsync(BootstrapAdminDto dto)
+        public async Task<ServiceResult<AuthResponseDto>> BootstrapAdminAsync(BootstrapAdminDto dto, string? setupToken)
         {
-            var hasAnyAdmin = await _context.AdminUsers.AnyAsync();
-
-            if (hasAnyAdmin)
+            if (!_adminBootstrapOptions.Enabled)
             {
                 return ServiceResult<AuthResponseDto>.Failure(
                     ServiceErrorType.Conflict,
-                    "Admin bootstrap is disabled because an admin user already exists.");
+                    "Admin bootstrap is disabled.");
+            }
+
+            if (!IsSetupTokenValid(setupToken))
+            {
+                return ServiceResult<AuthResponseDto>.Failure(
+                    ServiceErrorType.Unauthorized,
+                    "Admin bootstrap setup token is invalid.");
             }
 
             var email = NormalizeEmail(dto.Email);
-            var now = DateTime.UtcNow;
+            var now = _clock.UtcNow;
             var adminUser = new AdminUser
             {
                 Email = email,
@@ -52,8 +70,40 @@ namespace CampingManager.Services
 
             adminUser.PasswordHash = _passwordHasher.HashPassword(adminUser, dto.Password);
 
+            await using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+
+            var hasAnyAdmin = await _context.AdminUsers.AnyAsync();
+
+            if (hasAnyAdmin)
+            {
+                return ServiceResult<AuthResponseDto>.Failure(
+                    ServiceErrorType.Conflict,
+                    "Admin bootstrap is disabled because an admin user already exists.");
+            }
+
+            _context.AppLocks.Add(new AppLock
+            {
+                Key = AppLockKeys.AdminBootstrap,
+                CreatedAt = now
+            });
+
             _context.AdminUsers.Add(adminUser);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogWarning(exception, "Admin bootstrap failed because the bootstrap lock already exists.");
+
+                return ServiceResult<AuthResponseDto>.Failure(
+                    ServiceErrorType.Conflict,
+                    "Admin bootstrap was already completed or is already running.");
+            }
+
+            _logger.LogInformation("Admin user {AdminUserId} bootstrapped.", adminUser.Id);
 
             return ServiceResult<AuthResponseDto>.Success(CreateAuthResponse(adminUser));
         }
@@ -82,9 +132,11 @@ namespace CampingManager.Services
             if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
             {
                 adminUser.PasswordHash = _passwordHasher.HashPassword(adminUser, dto.Password);
-                adminUser.UpdatedAt = DateTime.UtcNow;
+                adminUser.UpdatedAt = _clock.UtcNow;
                 await _context.SaveChangesAsync();
             }
+
+            _logger.LogInformation("Admin user {AdminUserId} logged in.", adminUser.Id);
 
             return ServiceResult<AuthResponseDto>.Success(CreateAuthResponse(adminUser));
         }
@@ -107,7 +159,7 @@ namespace CampingManager.Services
 
         private AuthResponseDto CreateAuthResponse(AdminUser adminUser)
         {
-            var expiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
+            var expiresAt = _clock.UtcNow.AddMinutes(_jwtSettings.ExpiresMinutes);
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
@@ -155,6 +207,21 @@ namespace CampingManager.Services
         private static string NormalizeEmail(string email)
         {
             return email.Trim().ToLowerInvariant();
+        }
+
+        private bool IsSetupTokenValid(string? setupToken)
+        {
+            if (string.IsNullOrWhiteSpace(setupToken) ||
+                string.IsNullOrWhiteSpace(_adminBootstrapOptions.SetupToken))
+            {
+                return false;
+            }
+
+            var actualBytes = Encoding.UTF8.GetBytes(setupToken);
+            var expectedBytes = Encoding.UTF8.GetBytes(_adminBootstrapOptions.SetupToken);
+
+            return actualBytes.Length == expectedBytes.Length &&
+                CryptographicOperations.FixedTimeEquals(actualBytes, expectedBytes);
         }
     }
 }

@@ -26,11 +26,11 @@ namespace CampingManager.Services
 
             if (!string.IsNullOrWhiteSpace(queryDto.Search))
             {
-                var normalizedSearch = queryDto.Search.Trim().ToLower();
+                var searchPattern = $"%{queryDto.Search.Trim()}%";
 
                 query = query.Where(equipmentType =>
-                    equipmentType.Code.ToLower().Contains(normalizedSearch) ||
-                    equipmentType.Name.ToLower().Contains(normalizedSearch));
+                    EF.Functions.Like(equipmentType.Code, searchPattern) ||
+                    EF.Functions.Like(equipmentType.Name, searchPattern));
             }
 
             return await query

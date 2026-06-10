@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
+import { ConfirmationService } from '../../../../core/confirmation/confirmation.service';
+import { formatApiError } from '../../../../core/http/api-error';
 import { PagedResult } from '../../../../shared/models/paged-result';
 import { EquipmentType } from '../../models/equipment-type.model';
 import { EquipmentTypesService } from '../../services/equipment-types.service';
@@ -20,6 +22,7 @@ export class EquipmentTypesListPageComponent implements OnInit {
   constructor(
     private readonly equipmentTypesService: EquipmentTypesService,
     private readonly changeDetector: ChangeDetectorRef,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -48,14 +51,17 @@ export class EquipmentTypesListPageComponent implements OnInit {
         next: (result) => {
           this.result = result;
         },
-        error: () => {
-          this.errorMessage = 'Impossibile caricare le tipologie. Verifica che API e login siano attivi.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile caricare le tipologie. Verifica che API e login siano attivi.',
+          );
         },
       });
   }
 
   deleteEquipmentType(type: EquipmentType): void {
-    const confirmed = window.confirm(`Eliminare la tipologia ${type.code}?`);
+    const confirmed = this.confirmationService.confirm(`Eliminare la tipologia ${type.code}?`);
 
     if (!confirmed) {
       return;
@@ -63,8 +69,8 @@ export class EquipmentTypesListPageComponent implements OnInit {
 
     this.equipmentTypesService.deleteEquipmentType(type.id).subscribe({
       next: () => this.loadEquipmentTypes(this.result?.pageNumber ?? 1),
-      error: () => {
-        this.errorMessage = 'Impossibile eliminare la tipologia.';
+      error: (error: unknown) => {
+        this.errorMessage = formatApiError(error, 'Impossibile eliminare la tipologia.');
         this.changeDetector.markForCheck();
       },
     });

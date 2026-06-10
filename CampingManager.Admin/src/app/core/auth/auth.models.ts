@@ -6,7 +6,6 @@ export interface AdminUser {
 }
 
 export interface AuthResponse {
-  accessToken: string;
   tokenType: string;
   expiresAt: string;
   user: AdminUser;

@@ -1,0 +1,49 @@
+.site-hero {
+  position: relative;
+  min-height: 35rem;
+  background: #23422a;
+  isolation: isolate;
+}
+
+.site-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.16), transparent 28rem),
+    linear-gradient(135deg, var(--site-green) 0%, var(--site-green-soft) 58%, #203821 100%);
+}
+
+.site-hero-content {
+  display: flex;
+  min-height: 35rem;
+  align-items: center;
+  padding-top: 4rem;
+  padding-bottom: 8rem;
+}
+
+.site-hero-copy {
+  max-width: 44rem;
+}
+
+h1 {
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3rem, 5vw, 5.25rem);
+  font-weight: 800;
+  line-height: 1.06;
+  margin: 0;
+  text-shadow: 0 5px 24px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 767.98px) {
+  .site-hero,
+  .site-hero-content {
+    min-height: 30rem;
+  }
+
+  .site-hero-content {
+    padding-top: 2.5rem;
+    padding-bottom: 7rem;
+  }
+}

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
+import { formatApiError } from '../../../../core/http/api-error';
 import { SavePitchRequest } from '../../models/pitch.model';
 import { PitchesService } from '../../services/pitches.service';
 
@@ -64,8 +65,11 @@ export class PitchFormPageComponent implements OnInit {
       }))
       .subscribe({
         next: () => void this.router.navigate(['/pitches']),
-        error: () => {
-          this.errorMessage = 'Impossibile salvare la piazzola. Controlla i dati inseriti.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile salvare la piazzola. Controlla i dati inseriti.',
+          );
           this.changeDetector.markForCheck();
         },
       });
@@ -89,8 +93,8 @@ export class PitchFormPageComponent implements OnInit {
             isActive: pitch.isActive,
           });
         },
-        error: () => {
-          this.errorMessage = 'Piazzola non trovata o API non raggiungibile.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(error, 'Piazzola non trovata o API non raggiungibile.');
         },
       });
   }

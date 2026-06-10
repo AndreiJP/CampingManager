@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { finalize, timeout } from 'rxjs';
+import { ConfirmationService } from '../../../../core/confirmation/confirmation.service';
+import { formatApiError } from '../../../../core/http/api-error';
 import { PagedResult } from '../../../../shared/models/paged-result';
 import { Pitch } from '../../models/pitch.model';
 import { PitchesService } from '../../services/pitches.service';
@@ -21,6 +22,7 @@ export class PitchesListPageComponent implements OnInit {
   constructor(
     private readonly pitchesService: PitchesService,
     private readonly changeDetector: ChangeDetectorRef,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -50,16 +52,16 @@ export class PitchesListPageComponent implements OnInit {
           this.result = result;
         },
         error: (error: unknown) => {
-          console.error('Pitches list load failed', error);
-          const status = error instanceof HttpErrorResponse ? ` Stato HTTP: ${error.status}.` : '';
-
-          this.errorMessage = `Impossibile caricare le piazzole.${status} Verifica che API e login siano attivi.`;
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile caricare le piazzole. Verifica che API e login siano attivi.',
+          );
         },
       });
   }
 
   deletePitch(pitch: Pitch): void {
-    const confirmed = window.confirm(`Eliminare la piazzola ${pitch.pitchNumber}?`);
+    const confirmed = this.confirmationService.confirm(`Eliminare la piazzola ${pitch.pitchNumber}?`);
 
     if (!confirmed) {
       return;
@@ -67,8 +69,8 @@ export class PitchesListPageComponent implements OnInit {
 
     this.pitchesService.deletePitch(pitch.id).subscribe({
       next: () => this.loadPitches(this.result?.pageNumber ?? 1),
-      error: () => {
-        this.errorMessage = 'Impossibile eliminare la piazzola.';
+      error: (error: unknown) => {
+        this.errorMessage = formatApiError(error, 'Impossibile eliminare la piazzola.');
         this.changeDetector.markForCheck();
       },
     });

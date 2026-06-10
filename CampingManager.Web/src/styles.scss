@@ -1,0 +1,27 @@
+:root {
+  --site-green: #1f3a24;
+  --site-green-soft: #2f5635;
+  --site-ink: #1f3021;
+  --site-muted: #687064;
+  --site-surface: #f7f8f3;
+  --site-accent: #ce6541;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--site-surface);
+  color: var(--site-ink);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.btn,
+.form-control,
+.form-select,
+.alert {
+  border-radius: 0.5rem;
+}

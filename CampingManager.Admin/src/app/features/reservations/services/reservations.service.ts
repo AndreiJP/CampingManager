@@ -1,9 +1,15 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { buildHttpParams } from '../../../core/http/api-params';
 import { PagedResult } from '../../../shared/models/paged-result';
-import { Reservation, ReservationStatus, SaveReservationRequest } from '../models/reservation.model';
+import {
+  PitchAvailability,
+  Reservation,
+  ReservationStatus,
+  SaveReservationRequest,
+} from '../models/reservation.model';
 
 export interface ReservationQuery {
   pageNumber: number;
@@ -14,6 +20,13 @@ export interface ReservationQuery {
   toDate?: string;
 }
 
+export interface AvailabilityQuery {
+  fromDate: string;
+  toDate: string;
+  excludeReservationId?: number;
+  includeUnavailable?: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ReservationsService {
   private readonly resourceUrl = `${environment.apiBaseUrl}/Reservations`;
@@ -21,27 +34,15 @@ export class ReservationsService {
   constructor(private readonly http: HttpClient) {}
 
   getReservations(query: ReservationQuery): Observable<PagedResult<Reservation>> {
-    let params = new HttpParams()
-      .set('pageNumber', query.pageNumber)
-      .set('pageSize', query.pageSize);
-
-    if (query.search) {
-      params = params.set('search', query.search);
-    }
-
-    if (query.status) {
-      params = params.set('status', query.status);
-    }
-
-    if (query.fromDate) {
-      params = params.set('fromDate', query.fromDate);
-    }
-
-    if (query.toDate) {
-      params = params.set('toDate', query.toDate);
-    }
+    const params = buildHttpParams(query);
 
     return this.http.get<PagedResult<Reservation>>(this.resourceUrl, { params });
+  }
+
+  getAvailability(query: AvailabilityQuery): Observable<PitchAvailability[]> {
+    const params = buildHttpParams(query);
+
+    return this.http.get<PitchAvailability[]>(`${this.resourceUrl}/availability`, { params });
   }
 
   getReservation(id: number): Observable<Reservation> {
@@ -58,5 +59,21 @@ export class ReservationsService {
 
   deleteReservation(id: number): Observable<void> {
     return this.http.delete<void>(`${this.resourceUrl}/${id}`);
+  }
+
+  confirmReservation(id: number): Observable<Reservation> {
+    return this.http.post<Reservation>(`${this.resourceUrl}/${id}/confirm`, {});
+  }
+
+  checkInReservation(id: number): Observable<Reservation> {
+    return this.http.post<Reservation>(`${this.resourceUrl}/${id}/check-in`, {});
+  }
+
+  checkOutReservation(id: number): Observable<Reservation> {
+    return this.http.post<Reservation>(`${this.resourceUrl}/${id}/check-out`, {});
+  }
+
+  cancelReservation(id: number): Observable<Reservation> {
+    return this.http.post<Reservation>(`${this.resourceUrl}/${id}/cancel`, {});
   }
 }

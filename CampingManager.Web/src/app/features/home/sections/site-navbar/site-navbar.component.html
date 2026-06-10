@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg site-navbar" id="top">
+  <div class="container-xxl">
+    <a class="navbar-brand site-brand" href="#top" aria-label="Camping Verde home">
+      <span class="site-brand-mark">
+        <i class="bi bi-tree-fill"></i>
+      </span>
+      <span>Camping Verde</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#siteNavigation"
+      aria-controls="siteNavigation"
+      aria-expanded="false"
+      aria-label="Apri menu"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="siteNavigation">
+      <ul class="navbar-nav mx-lg-auto align-items-lg-center gap-lg-3">
+        <li class="nav-item" *ngFor="let item of navigationItems; let first = first">
+          <a class="nav-link" [class.active]="first" [href]="item.href">
+            {{ item.label }}
+          </a>
+        </li>
+      </ul>
+
+      <div class="site-actions">
+        <button class="btn btn-link site-language" type="button" aria-label="Lingua italiano">
+          <span class="flag-dot"></span>
+          IT
+          <i class="bi bi-chevron-down"></i>
+        </button>
+        <a class="btn site-booking-btn" href="#availability">
+          <i class="bi bi-calendar-event"></i>
+          Prenota ora
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

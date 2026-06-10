@@ -1,0 +1,18 @@
+.public-site {
+  min-height: 100vh;
+  background: var(--site-surface);
+  color: var(--site-ink);
+}
+
+.availability-wrap {
+  position: relative;
+  z-index: 3;
+  margin-top: -5.5rem;
+  padding: 0 0 4rem;
+}
+
+@media (max-width: 991.98px) {
+  .availability-wrap {
+    margin-top: -2.5rem;
+  }
+}

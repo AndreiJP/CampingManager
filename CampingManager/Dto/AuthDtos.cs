@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace CampingManager.Dto
 {
@@ -37,7 +38,9 @@ namespace CampingManager.Dto
 
     public class AuthResponseDto
     {
-        public required string AccessToken { get; set; }
+        [JsonIgnore]
+        public string AccessToken { get; set; } = string.Empty;
+
         public string TokenType { get; set; } = "Bearer";
         public DateTime ExpiresAt { get; set; }
         public required AdminUserDto User { get; set; }

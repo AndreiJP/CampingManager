@@ -1,7 +1,8 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { buildHttpParams } from '../../../core/http/api-params';
 import { PagedResult } from '../../../shared/models/paged-result';
 import { Pitch, SavePitchRequest } from '../models/pitch.model';
 
@@ -19,17 +20,7 @@ export class PitchesService {
   constructor(private readonly http: HttpClient) {}
 
   getPitches(query: PitchQuery): Observable<PagedResult<Pitch>> {
-    let params = new HttpParams()
-      .set('pageNumber', query.pageNumber)
-      .set('pageSize', query.pageSize);
-
-    if (query.search) {
-      params = params.set('search', query.search);
-    }
-
-    if (query.isActive !== undefined) {
-      params = params.set('isActive', query.isActive);
-    }
+    const params = buildHttpParams(query);
 
     return this.http.get<PagedResult<Pitch>>(this.resourceUrl, { params });
   }

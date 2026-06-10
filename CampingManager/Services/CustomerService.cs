@@ -21,13 +21,13 @@ namespace CampingManager.Services
 
             if (!string.IsNullOrWhiteSpace(queryDto.Search))
             {
-                var normalizedSearch = queryDto.Search.Trim().ToLower();
+                var searchPattern = $"%{queryDto.Search.Trim()}%";
 
                 query = query.Where(customer =>
-                    customer.FirstName.ToLower().Contains(normalizedSearch) ||
-                    customer.LastName.ToLower().Contains(normalizedSearch) ||
-                    customer.Email.ToLower().Contains(normalizedSearch) ||
-                    (customer.PhoneNumber != null && customer.PhoneNumber.Contains(normalizedSearch)));
+                    EF.Functions.Like(customer.FirstName, searchPattern) ||
+                    EF.Functions.Like(customer.LastName, searchPattern) ||
+                    EF.Functions.Like(customer.Email, searchPattern) ||
+                    (customer.PhoneNumber != null && EF.Functions.Like(customer.PhoneNumber, searchPattern)));
             }
 
             return await query

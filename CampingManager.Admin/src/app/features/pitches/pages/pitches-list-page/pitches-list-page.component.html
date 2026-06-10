@@ -63,6 +63,8 @@
           </tbody>
         </table>
       </div>
+
+      <app-paginator [result]="result" (pageChange)="loadPitches($event)"></app-paginator>
     </ng-container>
   </div>
 </div>

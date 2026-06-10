@@ -4,6 +4,7 @@ using CampingManager.Authorization;
 using CampingManager.Interfaces;
 using CampingManager.Options;
 using CampingManager.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,8 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -49,6 +52,21 @@ builder.Services
     .Bind(builder.Configuration.GetSection("Jwt"))
     .ValidateDataAnnotations()
     .Validate(settings => settings.SecretKey.Length >= 32, "JWT secret key must be at least 32 characters.")
+    .Validate(
+        settings => !builder.Environment.IsProduction() || !IsUnsafeJwtSecret(settings.SecretKey),
+        "JWT secret key must be configured from a production secret source.")
+    .ValidateOnStart();
+
+builder.Services
+    .AddOptions<AdminBootstrapOptions>()
+    .Bind(builder.Configuration.GetSection("AdminBootstrap"))
+    .ValidateDataAnnotations()
+    .Validate(options => !options.Enabled || !string.IsNullOrWhiteSpace(options.SetupToken),
+        "Admin bootstrap setup token is required when bootstrap is enabled.")
+    .Validate(options => !options.Enabled || options.SetupToken!.Length >= 16,
+        "Admin bootstrap setup token must be at least 16 characters.")
+    .Validate(options => !builder.Environment.IsProduction() || !options.Enabled || options.SetupToken!.Length >= 32,
+        "Admin bootstrap setup token must be at least 32 characters in production.")
     .ValidateOnStart();
 
 var jwtSettings = builder.Configuration
@@ -70,6 +88,19 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
             ClockSkew = TimeSpan.FromMinutes(1)
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrWhiteSpace(context.Token) &&
+                    context.Request.Cookies.TryGetValue(AdminAuthConstants.AccessTokenCookieName, out var accessToken))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization(options =>
@@ -83,8 +114,29 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IPitchService, PitchService>();
 builder.Services.AddScoped<ICampingEquipmentTypeService, CampingEquipmentTypeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<IClock, SystemClock>();
 
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions["traceId"] = context.HttpContext.TraceIdentifier;
+    };
+});
+
+builder.Services.AddHealthChecks();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("AdminBootstrap", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 3;
+        limiterOptions.QueueLimit = 0;
+        limiterOptions.Window = TimeSpan.FromMinutes(10);
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -154,10 +206,31 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.TryAdd("X-Trace-Id", context.TraceIdentifier);
+
+    using var scope = app.Logger.BeginScope(new Dictionary<string, object>
+    {
+        ["TraceId"] = context.TraceIdentifier
+    });
+
+    await next(context);
+});
+
+app.UseRouting();
 app.UseCors("AdminFrontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
+
+static bool IsUnsafeJwtSecret(string secretKey)
+{
+    return secretKey.Equals("CHANGE_ME_USE_ENVIRONMENT_VARIABLE_IN_PRODUCTION", StringComparison.Ordinal) ||
+        secretKey.StartsWith("dev-only-", StringComparison.OrdinalIgnoreCase);
+}

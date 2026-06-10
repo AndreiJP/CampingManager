@@ -60,6 +60,8 @@
           </tbody>
         </table>
       </div>
+
+      <app-paginator [result]="result" (pageChange)="loadCustomers($event)"></app-paginator>
     </ng-container>
   </div>
 </div>

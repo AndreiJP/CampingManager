@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { finalize, timeout } from 'rxjs';
+import { ConfirmationService } from '../../../../core/confirmation/confirmation.service';
+import { formatApiError } from '../../../../core/http/api-error';
 import { PagedResult } from '../../../../shared/models/paged-result';
 import { Customer } from '../../models/customer.model';
 import { CustomersService } from '../../services/customers.service';
@@ -19,6 +21,7 @@ export class CustomersListPageComponent implements OnInit {
   constructor(
     private readonly customersService: CustomersService,
     private readonly changeDetector: ChangeDetectorRef,
+    private readonly confirmationService: ConfirmationService,
   ) {}
 
   ngOnInit(): void {
@@ -46,14 +49,19 @@ export class CustomersListPageComponent implements OnInit {
         next: (result) => {
           this.result = result;
         },
-        error: () => {
-          this.errorMessage = 'Impossibile caricare i clienti. Verifica che API e login siano attivi.';
+        error: (error: unknown) => {
+          this.errorMessage = formatApiError(
+            error,
+            'Impossibile caricare i clienti. Verifica che API e login siano attivi.',
+          );
         },
       });
   }
 
   deleteCustomer(customer: Customer): void {
-    const confirmed = window.confirm(`Eliminare il cliente ${customer.firstName} ${customer.lastName}?`);
+    const confirmed = this.confirmationService.confirm(
+      `Eliminare il cliente ${customer.firstName} ${customer.lastName}?`,
+    );
 
     if (!confirmed) {
       return;
@@ -61,8 +69,8 @@ export class CustomersListPageComponent implements OnInit {
 
     this.customersService.deleteCustomer(customer.id).subscribe({
       next: () => this.loadCustomers(this.result?.pageNumber ?? 1),
-      error: () => {
-        this.errorMessage = 'Impossibile eliminare il cliente.';
+      error: (error: unknown) => {
+        this.errorMessage = formatApiError(error, 'Impossibile eliminare il cliente.');
         this.changeDetector.markForCheck();
       },
     });

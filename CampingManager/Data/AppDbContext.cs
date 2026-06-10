@@ -12,6 +12,8 @@ namespace CampingManager.Data
         public DbSet<Pitch> Pitches => Set<Pitch>();
         public DbSet<CampingEquipmentType> CampingEquipmentTypes => Set<CampingEquipmentType>();
         public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
+        public DbSet<AppLock> AppLocks => Set<AppLock>();
+        public DbSet<PitchOccupancy> PitchOccupancies => Set<PitchOccupancy>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +70,18 @@ namespace CampingManager.Data
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.Property(adminUser => adminUser.UpdatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            });
+
+            modelBuilder.Entity<AppLock>(entity =>
+            {
+                entity.HasKey(appLock => appLock.Key);
+
+                entity.Property(appLock => appLock.Key)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.Property(appLock => appLock.CreatedAt)
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
@@ -149,6 +163,30 @@ namespace CampingManager.Data
                 entity.HasOne(reservation => reservation.CampingEquipmentType)
                     .WithMany()
                     .HasForeignKey(reservation => reservation.CampingEquipmentTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<PitchOccupancy>(entity =>
+            {
+                entity.Property(occupancy => occupancy.OccupancyDate)
+                    .IsRequired();
+
+                entity.Property(occupancy => occupancy.CreatedAt)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasIndex(occupancy => new { occupancy.PitchId, occupancy.OccupancyDate })
+                    .IsUnique();
+
+                entity.HasIndex(occupancy => occupancy.ReservationId);
+
+                entity.HasOne(occupancy => occupancy.Reservation)
+                    .WithMany(reservation => reservation.PitchOccupancies)
+                    .HasForeignKey(occupancy => occupancy.ReservationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(occupancy => occupancy.Pitch)
+                    .WithMany()
+                    .HasForeignKey(occupancy => occupancy.PitchId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
