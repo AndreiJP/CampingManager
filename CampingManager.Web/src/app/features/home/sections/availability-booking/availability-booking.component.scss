@@ -30,6 +30,47 @@ h2 {
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
   background: #fff;
+  transition: all 0.2s ease;
+}
+
+.field-card.no-click {
+  cursor: default;
+}
+
+.field-card:not(.no-click) {
+  cursor: pointer;
+}
+
+/* Accommodation Radio Group Styling */
+.accommodation-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.radio-chip {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--site-muted);
+  background: #f8f9fa;
+  border: 1px solid #e7e2d8;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radio-chip:hover {
+  background: #edf4e8;
+  color: var(--site-green);
+  border-color: var(--site-green-soft);
+}
+
+.radio-chip.active {
+  background: var(--site-green);
+  color: #fff;
+  border-color: var(--site-green);
 }
 
 /* Dropdown Containers */

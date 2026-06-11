@@ -60,6 +60,9 @@ export class AvailabilityBookingComponent {
   showGuestsDropdown = false;
   showAccommodationDropdown = false;
 
+  // UI Experiment: Radio buttons instead of dropdown
+  useRadioSelection = false;
+
   // Calendar Navigation States
   calendarYear = new Date().getFullYear();
   calendarMonth = new Date().getMonth(); // 0-indexed

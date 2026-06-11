@@ -149,25 +149,41 @@
         <div 
           class="field-card" 
           [class.active]="showAccommodationDropdown" 
-          (click)="toggleAccommodationDropdown($event)"
+          (click)="!useRadioSelection && toggleAccommodationDropdown($event)"
+          [class.no-click]="useRadioSelection"
         >
           <i class="bi bi-signpost-2 icon-align"></i>
           <div class="field-content">
             <label>Sistemazione</label>
-            <span class="field-value">{{ selectedAccommodationLabel }}</span>
-          </div>
-          
-          <!-- Custom Accommodation Dropdown -->
-          <div class="accommodation-dropdown" *ngIf="showAccommodationDropdown" (click)="$event.stopPropagation()">
-            <button
-              type="button"
-              *ngFor="let option of accommodationOptions"
-              class="accommodation-option"
-              [class.selected]="availabilityForm.controls.accommodationType.value === option.value"
-              (click)="selectAccommodation(option.value, $event)"
-            >
-              {{ option.label }}
-            </button>
+            
+            <ng-container *ngIf="!useRadioSelection">
+              <span class="field-value">{{ selectedAccommodationLabel }}</span>
+              <!-- Custom Accommodation Dropdown -->
+              <div class="accommodation-dropdown" *ngIf="showAccommodationDropdown" (click)="$event.stopPropagation()">
+                <button
+                  type="button"
+                  *ngFor="let option of accommodationOptions"
+                  class="accommodation-option"
+                  [class.selected]="availabilityForm.controls.accommodationType.value === option.value"
+                  (click)="selectAccommodation(option.value, $event)"
+                >
+                  {{ option.label }}
+                </button>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="useRadioSelection">
+              <div class="accommodation-radio-group">
+                <div 
+                  *ngFor="let option of accommodationOptions" 
+                  class="radio-chip"
+                  [class.active]="availabilityForm.controls.accommodationType.value === option.value"
+                  (click)="selectAccommodation(option.value, $event)"
+                >
+                  {{ option.label }}
+                </div>
+              </div>
+            </ng-container>
           </div>
         </div>
 

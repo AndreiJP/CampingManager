@@ -4,6 +4,7 @@ import { HomeRoutingModule } from './home-routing-module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { AvailabilityBookingComponent } from './sections/availability-booking/availability-booking.component';
 import { SiteHeroComponent } from './sections/site-hero/site-hero.component';
+import { ReviewsSectionComponent } from './sections/reviews-section/reviews-section.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { SiteHeroComponent } from './sections/site-hero/site-hero.component';
   imports: [
     SharedModule,
     HomeRoutingModule,
+    ReviewsSectionComponent,
   ],
 })
 export class HomeModule {}
