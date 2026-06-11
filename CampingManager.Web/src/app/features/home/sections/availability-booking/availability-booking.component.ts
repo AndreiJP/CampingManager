@@ -1,9 +1,20 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 interface AccommodationOption {
   value: string;
   label: string;
+}
+
+export interface CalendarDay {
+  date: Date;
+  dayNum: number;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isDisabled: boolean;
+  isSelectedCheckIn: boolean;
+  isSelectedCheckOut: boolean;
+  isInRange: boolean;
 }
 
 @Component({
@@ -42,6 +53,241 @@ export class AvailabilityBookingComponent {
   availabilityChecked = false;
   bookingSubmitted = false;
   errorMessage = '';
+
+  // Dropdown States
+  showCheckInCalendar = false;
+  showCheckOutCalendar = false;
+  showGuestsDropdown = false;
+  showAccommodationDropdown = false;
+
+  // Calendar Navigation States
+  calendarYear = new Date().getFullYear();
+  calendarMonth = new Date().getMonth(); // 0-indexed
+
+  readonly monthNames = [
+    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+    'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+  ];
+
+  readonly weekdayNames = ['Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa', 'Do'];
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeAllDropdowns();
+  }
+
+  closeAllDropdowns(): void {
+    this.showCheckInCalendar = false;
+    this.showCheckOutCalendar = false;
+    this.showGuestsDropdown = false;
+    this.showAccommodationDropdown = false;
+  }
+
+  toggleCheckInCalendar(event: Event): void {
+    event.stopPropagation();
+    const open = this.showCheckInCalendar;
+    this.closeAllDropdowns();
+    this.showCheckInCalendar = !open;
+    if (this.showCheckInCalendar) {
+      const checkInVal = this.availabilityForm.controls.checkInDate.value;
+      const refDate = checkInVal ? new Date(checkInVal) : new Date();
+      this.calendarYear = refDate.getFullYear();
+      this.calendarMonth = refDate.getMonth();
+    }
+  }
+
+  toggleCheckOutCalendar(event: Event): void {
+    event.stopPropagation();
+    const open = this.showCheckOutCalendar;
+    this.closeAllDropdowns();
+    this.showCheckOutCalendar = !open;
+    if (this.showCheckOutCalendar) {
+      const checkOutVal = this.availabilityForm.controls.checkOutDate.value;
+      const refDate = checkOutVal ? new Date(checkOutVal) : new Date();
+      this.calendarYear = refDate.getFullYear();
+      this.calendarMonth = refDate.getMonth();
+    }
+  }
+
+  toggleGuestsDropdown(event: Event): void {
+    event.stopPropagation();
+    const open = this.showGuestsDropdown;
+    this.closeAllDropdowns();
+    this.showGuestsDropdown = !open;
+  }
+
+  toggleAccommodationDropdown(event: Event): void {
+    event.stopPropagation();
+    const open = this.showAccommodationDropdown;
+    this.closeAllDropdowns();
+    this.showAccommodationDropdown = !open;
+  }
+
+  changeMonth(amount: number, event: Event): void {
+    event.stopPropagation();
+    let newMonth = this.calendarMonth + amount;
+    let newYear = this.calendarYear;
+
+    if (newMonth < 0) {
+      newMonth = 11;
+      newYear--;
+    } else if (newMonth > 11) {
+      newMonth = 0;
+      newYear++;
+    }
+
+    this.calendarYear = newYear;
+    this.calendarMonth = newMonth;
+  }
+
+  getCalendarDays(): CalendarDay[] {
+    const year = this.calendarYear;
+    const month = this.calendarMonth;
+    const days: CalendarDay[] = [];
+
+    const firstDay = new Date(year, month, 1);
+    let startDayOfWeek = firstDay.getDay();
+    // Make Monday = 0, Sunday = 6
+    startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const prevTotalDays = new Date(year, month, 0).getDate();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const checkInStr = this.availabilityForm.controls.checkInDate.value;
+    const checkOutStr = this.availabilityForm.controls.checkOutDate.value;
+
+    const checkInDate = checkInStr ? new Date(checkInStr) : null;
+    if (checkInDate) checkInDate.setHours(0, 0, 0, 0);
+    const checkOutDate = checkOutStr ? new Date(checkOutStr) : null;
+    if (checkOutDate) checkOutDate.setHours(0, 0, 0, 0);
+
+    // Prev month days
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const prevDate = new Date(year, month - 1, prevTotalDays - i);
+      days.push(this.createCalendarDay(prevDate, false, today, checkInDate, checkOutDate));
+    }
+
+    // Current month days
+    for (let i = 1; i <= totalDays; i++) {
+      const currDate = new Date(year, month, i);
+      days.push(this.createCalendarDay(currDate, true, today, checkInDate, checkOutDate));
+    }
+
+    // Next month days to make 42 cells (6 rows)
+    const remainingCells = 42 - days.length;
+    for (let i = 1; i <= remainingCells; i++) {
+      const nextDate = new Date(year, month + 1, i);
+      days.push(this.createCalendarDay(nextDate, false, today, checkInDate, checkOutDate));
+    }
+
+    return days;
+  }
+
+  private createCalendarDay(
+    date: Date,
+    isCurrentMonth: boolean,
+    today: Date,
+    checkInDate: Date | null,
+    checkOutDate: Date | null
+  ): CalendarDay {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+
+    const isToday = d.getTime() === today.getTime();
+    const isDisabled = d.getTime() < today.getTime();
+
+    const isSelectedCheckIn = checkInDate ? d.getTime() === checkInDate.getTime() : false;
+    const isSelectedCheckOut = checkOutDate ? d.getTime() === checkOutDate.getTime() : false;
+
+    const isInRange = checkInDate && checkOutDate
+      ? d.getTime() > checkInDate.getTime() && d.getTime() < checkOutDate.getTime()
+      : false;
+
+    return {
+      date: d,
+      dayNum: d.getDate(),
+      isCurrentMonth,
+      isToday,
+      isDisabled,
+      isSelectedCheckIn,
+      isSelectedCheckOut,
+      isInRange,
+    };
+  }
+
+  selectDate(day: CalendarDay, isCheckIn: boolean, event: Event): void {
+    event.stopPropagation();
+    if (day.isDisabled) return;
+
+    // Use local date values without timezone shift
+    const year = day.date.getFullYear();
+    const month = String(day.date.getMonth() + 1).padStart(2, '0');
+    const date = String(day.date.getDate()).padStart(2, '0');
+    const localISODate = `${year}-${month}-${date}`;
+
+    if (isCheckIn) {
+      this.availabilityForm.controls.checkInDate.setValue(localISODate);
+      this.showCheckInCalendar = false;
+
+      // Automatically update Check-out date if it is invalid
+      const checkOutVal = this.availabilityForm.controls.checkOutDate.value;
+      if (!checkOutVal || checkOutVal <= localISODate) {
+        const nextDay = new Date(day.date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextYear = nextDay.getFullYear();
+        const nextMonth = String(nextDay.getMonth() + 1).padStart(2, '0');
+        const nextDate = String(nextDay.getDate()).padStart(2, '0');
+        const nextDayStr = `${nextYear}-${nextMonth}-${nextDate}`;
+        this.availabilityForm.controls.checkOutDate.setValue(nextDayStr);
+      }
+    } else {
+      this.availabilityForm.controls.checkOutDate.setValue(localISODate);
+      this.showCheckOutCalendar = false;
+    }
+
+    this.verifyAvailability();
+  }
+
+  incrementAdults(event: Event): void {
+    event.stopPropagation();
+    const current = this.availabilityForm.controls.adultsCount.value;
+    if (current < 12) {
+      this.availabilityForm.controls.adultsCount.setValue(current + 1);
+    }
+  }
+
+  decrementAdults(event: Event): void {
+    event.stopPropagation();
+    const current = this.availabilityForm.controls.adultsCount.value;
+    if (current > 1) {
+      this.availabilityForm.controls.adultsCount.setValue(current - 1);
+    }
+  }
+
+  incrementChildren(event: Event): void {
+    event.stopPropagation();
+    const current = this.availabilityForm.controls.childrenCount.value;
+    if (current < 12) {
+      this.availabilityForm.controls.childrenCount.setValue(current + 1);
+    }
+  }
+
+  decrementChildren(event: Event): void {
+    event.stopPropagation();
+    const current = this.availabilityForm.controls.childrenCount.value;
+    if (current > 0) {
+      this.availabilityForm.controls.childrenCount.setValue(current - 1);
+    }
+  }
+
+  selectAccommodation(value: string, event: Event): void {
+    event.stopPropagation();
+    this.availabilityForm.controls.accommodationType.setValue(value);
+    this.showAccommodationDropdown = false;
+  }
 
   get guestSummary(): string {
     const value = this.availabilityForm.getRawValue();

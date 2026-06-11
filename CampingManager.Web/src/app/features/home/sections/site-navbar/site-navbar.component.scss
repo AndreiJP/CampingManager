@@ -34,21 +34,17 @@
   color: #101811;
   font-weight: 600;
   padding: 0.75rem 0.25rem;
+  border-bottom: 2px solid transparent; /* Reserve space to prevent height shift */
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .nav-link:hover,
 .nav-link.active {
   color: var(--site-green);
+  border-bottom-color: var(--site-green);
 }
 
-.nav-link.active::after {
-  display: block;
-  width: 2.25rem;
-  height: 2px;
-  margin-top: 0.55rem;
-  background: var(--site-green);
-  content: "";
-}
+/* Removed the .nav-link.active::after block that caused height shifts */
 
 .site-actions {
   display: flex;
@@ -105,9 +101,5 @@
   .site-language,
   .site-booking-btn {
     justify-content: center;
-  }
-
-  .nav-link.active::after {
-    display: none;
   }
 }

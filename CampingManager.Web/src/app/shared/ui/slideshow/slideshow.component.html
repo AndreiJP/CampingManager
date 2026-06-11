@@ -1,0 +1,12 @@
+<div class="slideshow" *ngIf="items.length > 0">
+  <div class="slide" *ngFor="let item of items; let i = index" [class.active]="i === currentIndex">
+    <img [src]="item.imageUrl" [alt]="item.title">
+    <div class="content">
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.description }}</p>
+    </div>
+  </div>
+  
+  <button class="nav prev" (click)="prev()">&#10094;</button>
+  <button class="nav next" (click)="next()">&#10095;</button>
+</div>

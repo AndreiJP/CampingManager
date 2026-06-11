@@ -1,0 +1,78 @@
+<footer class="site-footer" *ngIf="config$ | async as config">
+  <div class="container-xxl">
+    <div class="row g-4 footer-content">
+      <!-- Col 1: Branding & Description -->
+      <div class="col-lg-4 col-md-6 footer-brand-col">
+        <a class="footer-brand" href="#top">
+          <span class="brand-icon">
+            <i class="bi" [ngClass]="config.logoIcon"></i>
+          </span>
+          <span class="brand-text">{{ config.siteName }}</span>
+        </a>
+        <p class="brand-tagline">
+          Vivi un'esperienza indimenticabile immerso nella natura incontaminata. Piazzole spaziose, servizi moderni e relax assicurato per tutta la famiglia.
+        </p>
+        <div class="social-links">
+          <a *ngIf="config.facebookUrl" [href]="config.facebookUrl" target="_blank" rel="noopener" aria-label="Facebook">
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a *ngIf="config.instagramUrl" [href]="config.instagramUrl" target="_blank" rel="noopener" aria-label="Instagram">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a *ngIf="config.twitterUrl" [href]="config.twitterUrl" target="_blank" rel="noopener" aria-label="Twitter">
+            <i class="bi bi-twitter-x"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Quick Links -->
+      <div class="col-lg-2 col-md-6 footer-links-col">
+        <h4>Link Rapidi</h4>
+        <ul class="footer-links">
+          <li><a href="#top">Home</a></li>
+          <li><a href="#availability">Verifica Disponibilità</a></li>
+          <li><a href="#availability">Prenota Piazzola</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Contacts info -->
+      <div class="col-lg-3 col-md-6 footer-contacts-col">
+        <h4>Contatti</h4>
+        <ul class="contact-list">
+          <li *ngIf="config.address">
+            <i class="bi bi-geo-alt"></i>
+            <span>{{ config.address }}</span>
+          </li>
+          <li *ngIf="config.phone">
+            <i class="bi bi-telephone"></i>
+            <a [href]="'tel:' + config.phone">{{ config.phone }}</a>
+          </li>
+          <li *ngIf="config.email">
+            <i class="bi bi-envelope"></i>
+            <a [href]="'mailto:' + config.email">{{ config.email }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Opening info -->
+      <div class="col-lg-3 col-md-6 footer-opening-col">
+        <h4>Orari & Stagione</h4>
+        <ul class="opening-list">
+          <li *ngIf="config.openingHours">
+            <i class="bi bi-clock"></i>
+            <span>{{ config.openingHours }}</span>
+          </li>
+          <li>
+            <i class="bi bi-shield-check"></i>
+            <span>Check-in: 14:00 - 20:00<br>Check-out: 08:00 - 11:00</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-bottom">
+      <p>&copy; {{ currentYear }} {{ config.siteName }}. Tutti i diritti riservati. Gestito da CampingManager.</p>
+    </div>
+  </div>
+</footer>

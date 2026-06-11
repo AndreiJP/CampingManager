@@ -1,10 +1,10 @@
-<nav class="navbar navbar-expand-lg site-navbar" id="top">
+<nav class="navbar navbar-expand-lg site-navbar" id="top" *ngIf="config$ | async as config">
   <div class="container-xxl">
-    <a class="navbar-brand site-brand" href="#top" aria-label="Camping Verde home">
+    <a class="navbar-brand site-brand" href="#top" [attr.aria-label]="config.siteName + ' home'">
       <span class="site-brand-mark">
-        <i class="bi bi-tree-fill"></i>
+        <i class="bi" [ngClass]="config.logoIcon"></i>
       </span>
-      <span>Camping Verde</span>
+      <span>{{ config.siteName }}</span>
     </a>
 
     <button
@@ -21,10 +21,23 @@
 
     <div class="collapse navbar-collapse" id="siteNavigation">
       <ul class="navbar-nav mx-lg-auto align-items-lg-center gap-lg-3">
-        <li class="nav-item" *ngFor="let item of navigationItems; let first = first">
-          <a class="nav-link" [class.active]="first" [href]="item.href">
-            {{ item.label }}
-          </a>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">Chi Siamo</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/activities" routerLinkActive="active">Attività</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/gallery" routerLinkActive="active">Galleria</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/rules" routerLinkActive="active">Regolamento</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contatti</a>
         </li>
       </ul>
 

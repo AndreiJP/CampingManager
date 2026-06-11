@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { ConfigService } from '../../../../shared/config.service';
 
 @Component({
-  selector: 'app-site-navbar',
+  selector: 'app-site-footer',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './site-navbar.component.html',
-  styleUrl: './site-navbar.component.scss',
+  imports: [CommonModule],
+  templateUrl: './site-footer.component.html',
+  styleUrl: './site-footer.component.scss',
 })
-export class SiteNavbarComponent {
+export class SiteFooterComponent {
   private readonly configService = inject(ConfigService);
   readonly config$ = this.configService.config$;
+
+  readonly currentYear = new Date().getFullYear();
 }

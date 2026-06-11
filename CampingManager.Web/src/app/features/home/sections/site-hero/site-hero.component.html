@@ -1,8 +1,8 @@
-<header class="site-hero">
+<header class="site-hero" *ngIf="config$ | async as config">
   <div class="site-hero-overlay"></div>
   <div class="container-xxl site-hero-content">
     <div class="site-hero-copy">
-      <h1>Piazzole camper e tende nel verde</h1>
+      <h1>{{ config.heroTitle }}</h1>
     </div>
   </div>
 </header>

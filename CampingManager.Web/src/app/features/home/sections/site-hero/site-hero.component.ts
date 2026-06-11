@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ConfigService } from '../../../../shared/config.service';
 
 @Component({
   selector: 'app-site-hero',
@@ -6,4 +7,7 @@ import { Component } from '@angular/core';
   templateUrl: './site-hero.component.html',
   styleUrl: './site-hero.component.scss',
 })
-export class SiteHeroComponent {}
+export class SiteHeroComponent {
+  private readonly configService = inject(ConfigService);
+  readonly config$ = this.configService.config$;
+}
