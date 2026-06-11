@@ -58,7 +58,6 @@ export class AvailabilityBookingComponent {
     notes: ["", [Validators.maxLength(500)]],
   });
 
-  readonly minDate = new Date().toISOString().slice(0, 10);
   stayDetailsCompleted = false;
   bookingSubmitted = false;
   errorMessage = "";
@@ -68,9 +67,6 @@ export class AvailabilityBookingComponent {
   showCheckOutCalendar = false;
   showGuestsDropdown = false;
   showAccommodationDropdown = false;
-
-  // UI Experiment: Radio buttons instead of dropdown
-  useRadioSelection = false;
 
   // Calendar Navigation States
   calendarYear = new Date().getFullYear();
@@ -338,8 +334,7 @@ export class AvailabilityBookingComponent {
   }
 
   get selectedAccommodationLabel(): string {
-    const selectedValue =
-      this.stayDetailsForm.controls.accommodationType.value;
+    const selectedValue = this.stayDetailsForm.controls.accommodationType.value;
 
     return (
       this.accommodationOptions.find((option) => option.value === selectedValue)

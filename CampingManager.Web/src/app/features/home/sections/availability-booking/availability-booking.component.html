@@ -65,9 +65,7 @@
           (optionSelected)="selectAccommodation($event)"
         ></app-accommodation-selector>
 
-        <button class="btn availability-submit" type="submit">
-          Continua
-        </button>
+        <button class="btn availability-submit" type="submit">Continua</button>
       </div>
 
       <div class="alert alert-danger mt-3 mb-0" *ngIf="errorMessage">
@@ -82,9 +80,7 @@
         <p>
           {{ stayDetailsForm.controls.checkInDate.value | date: "dd/MM/yyyy" }}
           -
-          {{
-            stayDetailsForm.controls.checkOutDate.value | date: "dd/MM/yyyy"
-          }}
+          {{ stayDetailsForm.controls.checkOutDate.value | date: "dd/MM/yyyy" }}
           - {{ guestSummary }} - {{ selectedAccommodationLabel }}
         </p>
       </div>
