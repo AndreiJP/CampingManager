@@ -33,7 +33,7 @@ export class AvailabilityBookingComponent {
     { value: "caravan", label: "Roulotte" },
   ];
 
-  readonly availabilityForm = this.formBuilder.nonNullable.group({
+  readonly stayDetailsForm = this.formBuilder.nonNullable.group({
     checkInDate: ["", [Validators.required]],
     checkOutDate: ["", [Validators.required]],
     adultsCount: [
@@ -59,7 +59,7 @@ export class AvailabilityBookingComponent {
   });
 
   readonly minDate = new Date().toISOString().slice(0, 10);
-  availabilityChecked = false;
+  stayDetailsCompleted = false;
   bookingSubmitted = false;
   errorMessage = "";
 
@@ -114,7 +114,7 @@ export class AvailabilityBookingComponent {
     this.closeAllDropdowns();
     this.showCheckInCalendar = !open;
     if (this.showCheckInCalendar) {
-      const checkInVal = this.availabilityForm.controls.checkInDate.value;
+      const checkInVal = this.stayDetailsForm.controls.checkInDate.value;
       const refDate = this.parseLocalDate(checkInVal) ?? new Date();
       this.calendarYear = refDate.getFullYear();
       this.calendarMonth = refDate.getMonth();
@@ -126,7 +126,7 @@ export class AvailabilityBookingComponent {
     this.closeAllDropdowns();
     this.showCheckOutCalendar = !open;
     if (this.showCheckOutCalendar) {
-      const checkOutVal = this.availabilityForm.controls.checkOutDate.value;
+      const checkOutVal = this.stayDetailsForm.controls.checkOutDate.value;
       const refDate = this.parseLocalDate(checkOutVal) ?? new Date();
       this.calendarYear = refDate.getFullYear();
       this.calendarMonth = refDate.getMonth();
@@ -177,8 +177,8 @@ export class AvailabilityBookingComponent {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const checkInStr = this.availabilityForm.controls.checkInDate.value;
-    const checkOutStr = this.availabilityForm.controls.checkOutDate.value;
+    const checkInStr = this.stayDetailsForm.controls.checkInDate.value;
+    const checkOutStr = this.stayDetailsForm.controls.checkOutDate.value;
 
     const checkInDate = this.parseLocalDate(checkInStr);
     if (checkInDate) checkInDate.setHours(0, 0, 0, 0);
@@ -275,59 +275,59 @@ export class AvailabilityBookingComponent {
     const localISODate = this.toLocalIsoDate(day.date);
 
     if (isCheckIn) {
-      this.availabilityForm.controls.checkInDate.setValue(localISODate);
+      this.stayDetailsForm.controls.checkInDate.setValue(localISODate);
       this.showCheckInCalendar = false;
 
       // Automatically update Check-out date if it is invalid
-      const checkOutVal = this.availabilityForm.controls.checkOutDate.value;
+      const checkOutVal = this.stayDetailsForm.controls.checkOutDate.value;
       if (!checkOutVal || checkOutVal <= localISODate) {
         const nextDay = new Date(day.date);
         nextDay.setDate(nextDay.getDate() + 1);
-        this.availabilityForm.controls.checkOutDate.setValue(
+        this.stayDetailsForm.controls.checkOutDate.setValue(
           this.toLocalIsoDate(nextDay),
         );
       }
     } else {
-      this.availabilityForm.controls.checkOutDate.setValue(localISODate);
+      this.stayDetailsForm.controls.checkOutDate.setValue(localISODate);
       this.showCheckOutCalendar = false;
     }
   }
 
   incrementAdults(): void {
-    const current = this.availabilityForm.controls.adultsCount.value;
+    const current = this.stayDetailsForm.controls.adultsCount.value;
     if (current < 12) {
-      this.availabilityForm.controls.adultsCount.setValue(current + 1);
+      this.stayDetailsForm.controls.adultsCount.setValue(current + 1);
     }
   }
 
   decrementAdults(): void {
-    const current = this.availabilityForm.controls.adultsCount.value;
+    const current = this.stayDetailsForm.controls.adultsCount.value;
     if (current > 1) {
-      this.availabilityForm.controls.adultsCount.setValue(current - 1);
+      this.stayDetailsForm.controls.adultsCount.setValue(current - 1);
     }
   }
 
   incrementChildren(): void {
-    const current = this.availabilityForm.controls.childrenCount.value;
+    const current = this.stayDetailsForm.controls.childrenCount.value;
     if (current < 12) {
-      this.availabilityForm.controls.childrenCount.setValue(current + 1);
+      this.stayDetailsForm.controls.childrenCount.setValue(current + 1);
     }
   }
 
   decrementChildren(): void {
-    const current = this.availabilityForm.controls.childrenCount.value;
+    const current = this.stayDetailsForm.controls.childrenCount.value;
     if (current > 0) {
-      this.availabilityForm.controls.childrenCount.setValue(current - 1);
+      this.stayDetailsForm.controls.childrenCount.setValue(current - 1);
     }
   }
 
   selectAccommodation(value: string): void {
-    this.availabilityForm.controls.accommodationType.setValue(value);
+    this.stayDetailsForm.controls.accommodationType.setValue(value);
     this.showAccommodationDropdown = false;
   }
 
   get guestSummary(): string {
-    const value = this.availabilityForm.getRawValue();
+    const value = this.stayDetailsForm.getRawValue();
     const adults = `${value.adultsCount} adult${value.adultsCount === 1 ? "o" : "i"}`;
     const children =
       value.childrenCount > 0
@@ -339,7 +339,7 @@ export class AvailabilityBookingComponent {
 
   get selectedAccommodationLabel(): string {
     const selectedValue =
-      this.availabilityForm.controls.accommodationType.value;
+      this.stayDetailsForm.controls.accommodationType.value;
 
     return (
       this.accommodationOptions.find((option) => option.value === selectedValue)
@@ -347,25 +347,25 @@ export class AvailabilityBookingComponent {
     );
   }
 
-  verifyAvailability(): void {
+  continueToRequest(): void {
     this.errorMessage = "";
     this.bookingSubmitted = false;
-    this.availabilityForm.markAllAsTouched();
+    this.stayDetailsCompleted = false;
+    this.stayDetailsForm.markAllAsTouched();
 
-    if (this.availabilityForm.invalid) {
+    if (this.stayDetailsForm.invalid) {
       return;
     }
 
-    const { checkInDate, checkOutDate } = this.availabilityForm.getRawValue();
+    const { checkInDate, checkOutDate } = this.stayDetailsForm.getRawValue();
 
     if (checkInDate >= checkOutDate) {
-      this.availabilityChecked = false;
       this.errorMessage =
         "La data di check-out deve essere successiva al check-in.";
       return;
     }
 
-    this.availabilityChecked = true;
+    this.stayDetailsCompleted = true;
   }
 
   submitBooking(): void {

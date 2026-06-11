@@ -1,20 +1,20 @@
 <section class="container-xxl">
   <div class="availability-card shadow-sm">
     <form
-      [formGroup]="availabilityForm"
-      (ngSubmit)="verifyAvailability()"
+      [formGroup]="stayDetailsForm"
+      (ngSubmit)="continueToRequest()"
       novalidate
     >
-      <h2>Verifica disponibilita</h2>
+      <h2>Richiedi disponibilita</h2>
 
       <div class="availability-grid">
         <app-availability-date-field
           label="Check-in"
-          [value]="availabilityForm.controls.checkInDate.value"
+          [value]="stayDetailsForm.controls.checkInDate.value"
           [isOpen]="showCheckInCalendar"
           [hasError]="
-            availabilityForm.controls.checkInDate.touched &&
-            availabilityForm.controls.checkInDate.invalid
+            stayDetailsForm.controls.checkInDate.touched &&
+            stayDetailsForm.controls.checkInDate.invalid
           "
           [monthName]="monthNames[calendarMonth]"
           [year]="calendarYear"
@@ -28,11 +28,11 @@
 
         <app-availability-date-field
           label="Check-out"
-          [value]="availabilityForm.controls.checkOutDate.value"
+          [value]="stayDetailsForm.controls.checkOutDate.value"
           [isOpen]="showCheckOutCalendar"
           [hasError]="
-            availabilityForm.controls.checkOutDate.touched &&
-            availabilityForm.controls.checkOutDate.invalid
+            stayDetailsForm.controls.checkOutDate.touched &&
+            stayDetailsForm.controls.checkOutDate.invalid
           "
           [monthName]="monthNames[calendarMonth]"
           [year]="calendarYear"
@@ -47,8 +47,8 @@
         <app-guest-selector
           [isOpen]="showGuestsDropdown"
           [summary]="guestSummary"
-          [adultsCount]="availabilityForm.controls.adultsCount.value"
-          [childrenCount]="availabilityForm.controls.childrenCount.value"
+          [adultsCount]="stayDetailsForm.controls.adultsCount.value"
+          [childrenCount]="stayDetailsForm.controls.childrenCount.value"
           (toggle)="toggleGuestsDropdown()"
           (incrementAdults)="incrementAdults()"
           (decrementAdults)="decrementAdults()"
@@ -59,14 +59,14 @@
         <app-accommodation-selector
           [isOpen]="showAccommodationDropdown"
           [options]="accommodationOptions"
-          [selectedValue]="availabilityForm.controls.accommodationType.value"
+          [selectedValue]="stayDetailsForm.controls.accommodationType.value"
           [selectedLabel]="selectedAccommodationLabel"
           (toggle)="toggleAccommodationDropdown()"
           (optionSelected)="selectAccommodation($event)"
         ></app-accommodation-selector>
 
         <button class="btn availability-submit" type="submit">
-          Verifica disponibilita
+          Continua
         </button>
       </div>
 
@@ -75,15 +75,15 @@
       </div>
     </form>
 
-    <div class="booking-panel" *ngIf="availabilityChecked">
+    <div class="booking-panel" *ngIf="stayDetailsCompleted">
       <div class="booking-summary">
-        <span class="badge rounded-pill">Disponibilita da confermare</span>
-        <h3>Completa la richiesta di prenotazione</h3>
+        <span class="badge rounded-pill">Richiesta non vincolante</span>
+        <h3>Completa la richiesta</h3>
         <p>
-          {{ availabilityForm.controls.checkInDate.value | date: "dd/MM/yyyy" }}
+          {{ stayDetailsForm.controls.checkInDate.value | date: "dd/MM/yyyy" }}
           -
           {{
-            availabilityForm.controls.checkOutDate.value | date: "dd/MM/yyyy"
+            stayDetailsForm.controls.checkOutDate.value | date: "dd/MM/yyyy"
           }}
           - {{ guestSummary }} - {{ selectedAccommodationLabel }}
         </p>
@@ -197,15 +197,15 @@
           <div class="success-alert-content">
             <strong>Richiesta completata.</strong>
             <span
-              >La prenotazione e stata salvata in bozza. L'invio API verra
-              collegato in uno step dedicato.</span
+              >La richiesta non conferma automaticamente la prenotazione. Ti
+              ricontatteremo per confermare disponibilita e dettagli.</span
             >
           </div>
         </div>
 
         <div class="booking-actions">
           <button class="btn availability-submit-booking" type="submit">
-            Prenota ora
+            Invia richiesta
           </button>
         </div>
       </form>

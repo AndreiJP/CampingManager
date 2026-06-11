@@ -25,7 +25,7 @@ describe("AvailabilityBookingComponent", () => {
   });
 
   it("shows an error when checkout is not after checkin", () => {
-    component.availabilityForm.patchValue({
+    component.stayDetailsForm.patchValue({
       checkInDate: "2026-07-10",
       checkOutDate: "2026-07-10",
       adultsCount: 2,
@@ -33,14 +33,14 @@ describe("AvailabilityBookingComponent", () => {
       accommodationType: "camper",
     });
 
-    component.verifyAvailability();
+    component.continueToRequest();
 
-    expect(component.availabilityChecked).toBe(false);
+    expect(component.stayDetailsCompleted).toBe(false);
     expect(component.errorMessage).toContain("check-out");
   });
 
-  it("marks availability as checked with a valid search", () => {
-    component.availabilityForm.patchValue({
+  it("opens the request form with valid stay details", () => {
+    component.stayDetailsForm.patchValue({
       checkInDate: "2026-07-10",
       checkOutDate: "2026-07-14",
       adultsCount: 2,
@@ -48,9 +48,9 @@ describe("AvailabilityBookingComponent", () => {
       accommodationType: "camper",
     });
 
-    component.verifyAvailability();
+    component.continueToRequest();
 
-    expect(component.availabilityChecked).toBe(true);
+    expect(component.stayDetailsCompleted).toBe(true);
     expect(component.errorMessage).toBe("");
     expect(component.guestSummary).toBe("2 adulti, 1 bambino");
   });
@@ -70,13 +70,13 @@ describe("AvailabilityBookingComponent", () => {
       true,
     );
 
-    expect(component.availabilityForm.controls.checkInDate.value).toBe(
+    expect(component.stayDetailsForm.controls.checkInDate.value).toBe(
       "2026-07-10",
     );
-    expect(component.availabilityForm.controls.checkOutDate.value).toBe(
+    expect(component.stayDetailsForm.controls.checkOutDate.value).toBe(
       "2026-07-11",
     );
-    expect(component.availabilityChecked).toBe(false);
+    expect(component.stayDetailsCompleted).toBe(false);
   });
 
   it("keeps guest counters within their limits", () => {
@@ -87,8 +87,8 @@ describe("AvailabilityBookingComponent", () => {
       component.incrementChildren();
     }
 
-    expect(component.availabilityForm.controls.adultsCount.value).toBe(1);
-    expect(component.availabilityForm.controls.childrenCount.value).toBe(12);
+    expect(component.stayDetailsForm.controls.adultsCount.value).toBe(1);
+    expect(component.stayDetailsForm.controls.childrenCount.value).toBe(12);
   });
 
   it("does not submit the booking request when required fields are missing", () => {
