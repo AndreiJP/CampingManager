@@ -1,0 +1,69 @@
+<div
+  class="field-card"
+  [class.active]="isOpen"
+  (click)="toggleDropdown($event)"
+>
+  <i class="bi bi-people icon-align"></i>
+  <div class="field-content">
+    <label>Ospiti</label>
+    <span class="field-value">{{ summary }}</span>
+  </div>
+
+  <div
+    class="guests-dropdown"
+    *ngIf="isOpen"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="guest-row">
+      <div class="guest-info">
+        <span class="guest-title">Adulti</span>
+        <span class="guest-subtitle">Eta 13+</span>
+      </div>
+      <div class="guest-counter">
+        <button
+          type="button"
+          class="btn-counter"
+          [disabled]="adultsCount <= 1"
+          (click)="emitClick($event, decrementAdults)"
+        >
+          <i class="bi bi-dash"></i>
+        </button>
+        <span class="counter-val">{{ adultsCount }}</span>
+        <button
+          type="button"
+          class="btn-counter"
+          [disabled]="adultsCount >= 12"
+          (click)="emitClick($event, incrementAdults)"
+        >
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="guest-row">
+      <div class="guest-info">
+        <span class="guest-title">Bambini</span>
+        <span class="guest-subtitle">Eta 0-12</span>
+      </div>
+      <div class="guest-counter">
+        <button
+          type="button"
+          class="btn-counter"
+          [disabled]="childrenCount <= 0"
+          (click)="emitClick($event, decrementChildren)"
+        >
+          <i class="bi bi-dash"></i>
+        </button>
+        <span class="counter-val">{{ childrenCount }}</span>
+        <button
+          type="button"
+          class="btn-counter"
+          [disabled]="childrenCount >= 12"
+          (click)="emitClick($event, incrementChildren)"
+        >
+          <i class="bi bi-plus"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div
+  class="field-card"
+  [class.active]="isOpen"
+  (click)="toggleDropdown($event)"
+>
+  <i class="bi bi-signpost-2 icon-align"></i>
+  <div class="field-content">
+    <label>Sistemazione</label>
+    <span class="field-value">{{ selectedLabel }}</span>
+  </div>
+
+  <div
+    class="accommodation-dropdown"
+    *ngIf="isOpen"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      type="button"
+      *ngFor="let option of options"
+      class="accommodation-option"
+      [class.selected]="selectedValue === option.value"
+      (click)="selectOption(option.value, $event)"
+    >
+      {{ option.label }}
+    </button>
+  </div>
+</div>

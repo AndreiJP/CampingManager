@@ -1,268 +1,191 @@
 <section class="container-xxl">
   <div class="availability-card shadow-sm">
-    <form [formGroup]="availabilityForm" (ngSubmit)="verifyAvailability()" novalidate>
-      <h2>Verifica disponibilità</h2>
+    <form
+      [formGroup]="availabilityForm"
+      (ngSubmit)="verifyAvailability()"
+      novalidate
+    >
+      <h2>Verifica disponibilita</h2>
 
       <div class="availability-grid">
-        <!-- Check-In -->
-        <div 
-          class="field-card" 
-          [class.active]="showCheckInCalendar" 
-          [class.has-error]="availabilityForm.controls.checkInDate.touched && availabilityForm.controls.checkInDate.invalid"
-          (click)="toggleCheckInCalendar($event)"
-        >
-          <i class="bi bi-calendar3 icon-align"></i>
-          <div class="field-content">
-            <label>Check-in</label>
-            <span class="field-value">
-              {{ (availabilityForm.controls.checkInDate.value | date: 'dd MMM yyyy') || 'Scegli data' }}
-            </span>
-          </div>
-          
-          <!-- Custom Calendar Dropdown -->
-          <div class="calendar-dropdown" *ngIf="showCheckInCalendar" (click)="$event.stopPropagation()">
-            <div class="calendar-header">
-              <button type="button" class="btn-month-nav" (click)="changeMonth(-1, $event)">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <span class="calendar-month-year">{{ monthNames[calendarMonth] }} {{ calendarYear }}</span>
-              <button type="button" class="btn-month-nav" (click)="changeMonth(1, $event)">
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-            <div class="calendar-weekdays">
-              <span *ngFor="let dayName of weekdayNames">{{ dayName }}</span>
-            </div>
-            <div class="calendar-grid">
-              <button
-                type="button"
-                *ngFor="let day of getCalendarDays()"
-                class="calendar-day"
-                [class.other-month]="!day.isCurrentMonth"
-                [class.today]="day.isToday"
-                [class.selected]="day.isSelectedCheckIn"
-                [class.range]="day.isInRange"
-                [disabled]="day.isDisabled"
-                (click)="selectDate(day, true, $event)"
-              >
-                {{ day.dayNum }}
-              </button>
-            </div>
-          </div>
-        </div>
+        <app-availability-date-field
+          label="Check-in"
+          [value]="availabilityForm.controls.checkInDate.value"
+          [isOpen]="showCheckInCalendar"
+          [hasError]="
+            availabilityForm.controls.checkInDate.touched &&
+            availabilityForm.controls.checkInDate.invalid
+          "
+          [monthName]="monthNames[calendarMonth]"
+          [year]="calendarYear"
+          [weekdayNames]="weekdayNames"
+          [days]="calendarDays"
+          selectedClass="isSelectedCheckIn"
+          (toggle)="toggleCheckInCalendar()"
+          (monthChange)="changeMonth($event)"
+          (daySelected)="selectDate($event, true)"
+        ></app-availability-date-field>
 
-        <!-- Check-Out -->
-        <div 
-          class="field-card" 
-          [class.active]="showCheckOutCalendar" 
-          [class.has-error]="availabilityForm.controls.checkOutDate.touched && availabilityForm.controls.checkOutDate.invalid"
-          (click)="toggleCheckOutCalendar($event)"
-        >
-          <i class="bi bi-calendar3 icon-align"></i>
-          <div class="field-content">
-            <label>Check-out</label>
-            <span class="field-value">
-              {{ (availabilityForm.controls.checkOutDate.value | date: 'dd MMM yyyy') || 'Scegli data' }}
-            </span>
-          </div>
-          
-          <!-- Custom Calendar Dropdown -->
-          <div class="calendar-dropdown" *ngIf="showCheckOutCalendar" (click)="$event.stopPropagation()">
-            <div class="calendar-header">
-              <button type="button" class="btn-month-nav" (click)="changeMonth(-1, $event)">
-                <i class="bi bi-chevron-left"></i>
-              </button>
-              <span class="calendar-month-year">{{ monthNames[calendarMonth] }} {{ calendarYear }}</span>
-              <button type="button" class="btn-month-nav" (click)="changeMonth(1, $event)">
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-            <div class="calendar-weekdays">
-              <span *ngFor="let dayName of weekdayNames">{{ dayName }}</span>
-            </div>
-            <div class="calendar-grid">
-              <button
-                type="button"
-                *ngFor="let day of getCalendarDays()"
-                class="calendar-day"
-                [class.other-month]="!day.isCurrentMonth"
-                [class.today]="day.isToday"
-                [class.selected]="day.isSelectedCheckOut"
-                [class.range]="day.isInRange"
-                [disabled]="day.isDisabled"
-                (click)="selectDate(day, false, $event)"
-              >
-                {{ day.dayNum }}
-              </button>
-            </div>
-          </div>
-        </div>
+        <app-availability-date-field
+          label="Check-out"
+          [value]="availabilityForm.controls.checkOutDate.value"
+          [isOpen]="showCheckOutCalendar"
+          [hasError]="
+            availabilityForm.controls.checkOutDate.touched &&
+            availabilityForm.controls.checkOutDate.invalid
+          "
+          [monthName]="monthNames[calendarMonth]"
+          [year]="calendarYear"
+          [weekdayNames]="weekdayNames"
+          [days]="calendarDays"
+          selectedClass="isSelectedCheckOut"
+          (toggle)="toggleCheckOutCalendar()"
+          (monthChange)="changeMonth($event)"
+          (daySelected)="selectDate($event, false)"
+        ></app-availability-date-field>
 
-        <!-- Ospiti -->
-        <div 
-          class="field-card" 
-          [class.active]="showGuestsDropdown" 
-          (click)="toggleGuestsDropdown($event)"
-        >
-          <i class="bi bi-people icon-align"></i>
-          <div class="field-content">
-            <label>Ospiti</label>
-            <span class="field-value">{{ guestSummary }}</span>
-          </div>
-          
-          <!-- Custom Guests Dropdown -->
-          <div class="guests-dropdown" *ngIf="showGuestsDropdown" (click)="$event.stopPropagation()">
-            <div class="guest-row">
-              <div class="guest-info">
-                <span class="guest-title">Adulti</span>
-                <span class="guest-subtitle">Età 13+</span>
-              </div>
-              <div class="guest-counter">
-                <button type="button" class="btn-counter" (click)="decrementAdults($event)" [disabled]="availabilityForm.controls.adultsCount.value <= 1">
-                  <i class="bi bi-minus"></i>
-                </button>
-                <span class="counter-val">{{ availabilityForm.controls.adultsCount.value }}</span>
-                <button type="button" class="btn-counter" (click)="incrementAdults($event)" [disabled]="availabilityForm.controls.adultsCount.value >= 12">
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="guest-row">
-              <div class="guest-info">
-                <span class="guest-title">Bambini</span>
-                <span class="guest-subtitle">Età 0-12</span>
-              </div>
-              <div class="guest-counter">
-                <button type="button" class="btn-counter" (click)="decrementChildren($event)" [disabled]="availabilityForm.controls.childrenCount.value <= 0">
-                  <i class="bi bi-minus"></i>
-                </button>
-                <span class="counter-val">{{ availabilityForm.controls.childrenCount.value }}</span>
-                <button type="button" class="btn-counter" (click)="incrementChildren($event)" [disabled]="availabilityForm.controls.childrenCount.value >= 12">
-                  <i class="bi bi-plus"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-guest-selector
+          [isOpen]="showGuestsDropdown"
+          [summary]="guestSummary"
+          [adultsCount]="availabilityForm.controls.adultsCount.value"
+          [childrenCount]="availabilityForm.controls.childrenCount.value"
+          (toggle)="toggleGuestsDropdown()"
+          (incrementAdults)="incrementAdults()"
+          (decrementAdults)="decrementAdults()"
+          (incrementChildren)="incrementChildren()"
+          (decrementChildren)="decrementChildren()"
+        ></app-guest-selector>
 
-        <!-- Sistemazione -->
-        <div 
-          class="field-card" 
-          [class.active]="showAccommodationDropdown" 
-          (click)="toggleAccommodationDropdown($event)"
-        >
-          <i class="bi bi-signpost-2 icon-align"></i>
-          <div class="field-content">
-            <label>Sistemazione</label>
-            <span class="field-value">{{ selectedAccommodationLabel }}</span>
-          </div>
-          
-          <!-- Custom Accommodation Dropdown -->
-          <div class="accommodation-dropdown" *ngIf="showAccommodationDropdown" (click)="$event.stopPropagation()">
-            <button
-              type="button"
-              *ngFor="let option of accommodationOptions"
-              class="accommodation-option"
-              [class.selected]="availabilityForm.controls.accommodationType.value === option.value"
-              (click)="selectAccommodation(option.value, $event)"
-            >
-              {{ option.label }}
-            </button>
-          </div>
-        </div>
+        <app-accommodation-selector
+          [isOpen]="showAccommodationDropdown"
+          [options]="accommodationOptions"
+          [selectedValue]="availabilityForm.controls.accommodationType.value"
+          [selectedLabel]="selectedAccommodationLabel"
+          (toggle)="toggleAccommodationDropdown()"
+          (optionSelected)="selectAccommodation($event)"
+        ></app-accommodation-selector>
 
         <button class="btn availability-submit" type="submit">
-          Verifica disponibilità
+          Verifica disponibilita
         </button>
       </div>
 
-      <div class="alert alert-danger mt-3 mb-0" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="alert alert-danger mt-3 mb-0" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
     </form>
 
     <div class="booking-panel" *ngIf="availabilityChecked">
       <div class="booking-summary">
-        <span class="badge rounded-pill">Disponibilità da confermare</span>
+        <span class="badge rounded-pill">Disponibilita da confermare</span>
         <h3>Completa la richiesta di prenotazione</h3>
         <p>
-          {{ availabilityForm.controls.checkInDate.value | date: 'dd/MM/yyyy' }}
+          {{ availabilityForm.controls.checkInDate.value | date: "dd/MM/yyyy" }}
           -
-          {{ availabilityForm.controls.checkOutDate.value | date: 'dd/MM/yyyy' }}
+          {{
+            availabilityForm.controls.checkOutDate.value | date: "dd/MM/yyyy"
+          }}
           - {{ guestSummary }} - {{ selectedAccommodationLabel }}
         </p>
       </div>
 
-      <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()" class="booking-form" novalidate>
+      <form
+        [formGroup]="bookingForm"
+        (ngSubmit)="submitBooking()"
+        class="booking-form"
+        novalidate
+      >
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label" for="firstName">Nome</label>
-            <div class="input-group">
+            <div class="input-group has-validation">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
               <input
                 id="firstName"
                 class="form-control form-input-premium"
                 formControlName="firstName"
                 placeholder="Es. Mario"
-                [class.is-invalid]="bookingForm.controls.firstName.touched && bookingForm.controls.firstName.invalid"
+                [class.is-invalid]="
+                  bookingForm.controls.firstName.touched &&
+                  bookingForm.controls.firstName.invalid
+                "
               />
+              <div class="invalid-feedback">Nome obbligatorio.</div>
             </div>
-            <div class="invalid-feedback">Nome obbligatorio.</div>
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="lastName">Cognome</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+            <div class="input-group has-validation">
+              <span class="input-group-text"
+                ><i class="bi bi-person-badge"></i
+              ></span>
               <input
                 id="lastName"
                 class="form-control form-input-premium"
                 formControlName="lastName"
                 placeholder="Es. Rossi"
-                [class.is-invalid]="bookingForm.controls.lastName.touched && bookingForm.controls.lastName.invalid"
+                [class.is-invalid]="
+                  bookingForm.controls.lastName.touched &&
+                  bookingForm.controls.lastName.invalid
+                "
               />
+              <div class="invalid-feedback">Cognome obbligatorio.</div>
             </div>
-            <div class="invalid-feedback">Cognome obbligatorio.</div>
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="email">Email</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            <div class="input-group has-validation">
+              <span class="input-group-text"
+                ><i class="bi bi-envelope"></i
+              ></span>
               <input
                 id="email"
                 type="email"
                 class="form-control form-input-premium"
                 formControlName="email"
                 placeholder="mario.rossi@example.com"
-                [class.is-invalid]="bookingForm.controls.email.touched && bookingForm.controls.email.invalid"
+                [class.is-invalid]="
+                  bookingForm.controls.email.touched &&
+                  bookingForm.controls.email.invalid
+                "
               />
+              <div class="invalid-feedback">Inserisci una email valida.</div>
             </div>
-            <div class="invalid-feedback">Inserisci una email valida.</div>
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="phoneNumber">Telefono</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+            <div class="input-group has-validation">
+              <span class="input-group-text"
+                ><i class="bi bi-telephone"></i
+              ></span>
               <input
                 id="phoneNumber"
                 class="form-control form-input-premium"
                 formControlName="phoneNumber"
                 placeholder="Es. +39 333 1234567"
-                [class.is-invalid]="bookingForm.controls.phoneNumber.touched && bookingForm.controls.phoneNumber.invalid"
+                [class.is-invalid]="
+                  bookingForm.controls.phoneNumber.touched &&
+                  bookingForm.controls.phoneNumber.invalid
+                "
               />
+              <div class="invalid-feedback">Telefono obbligatorio.</div>
             </div>
-            <div class="invalid-feedback">Telefono obbligatorio.</div>
           </div>
 
           <div class="col-12">
             <label class="form-label" for="notes">Note</label>
             <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-chat-left-text"></i></span>
+              <span class="input-group-text"
+                ><i class="bi bi-chat-left-text"></i
+              ></span>
               <textarea
                 id="notes"
                 class="form-control form-input-premium"
                 formControlName="notes"
-                placeholder="Richieste speciali (es. orario di arrivo stimato...)"
+                placeholder="Richieste speciali, orario di arrivo stimato o altre informazioni utili."
                 rows="3"
               ></textarea>
             </div>
@@ -272,13 +195,18 @@
         <div class="booking-success-alert" *ngIf="bookingSubmitted">
           <i class="bi bi-check-circle-fill success-alert-icon"></i>
           <div class="success-alert-content">
-            <strong>Richiesta completata!</strong>
-            <span>La prenotazione è stata salvata in bozza. Nel prossimo step collegheremo l'invio all'API pubblica.</span>
+            <strong>Richiesta completata.</strong>
+            <span
+              >La prenotazione e stata salvata in bozza. L'invio API verra
+              collegato in uno step dedicato.</span
+            >
           </div>
         </div>
 
         <div class="booking-actions">
-          <button class="btn availability-submit-booking" type="submit">Prenota ora</button>
+          <button class="btn availability-submit-booking" type="submit">
+            Prenota ora
+          </button>
         </div>
       </form>
     </div>

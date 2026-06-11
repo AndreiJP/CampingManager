@@ -1,6 +1,6 @@
 .site-footer {
   background: var(--site-green);
-  color: #ffffff;
+  color: #fff;
   padding: 5rem 0 2rem;
   margin-top: 5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -11,7 +11,6 @@
   margin-bottom: 3.5rem;
 }
 
-/* Brand Section */
 .footer-brand {
   display: inline-flex;
   align-items: center;
@@ -26,7 +25,7 @@
 
 .brand-icon {
   background: var(--site-accent);
-  color: #ffffff;
+  color: #fff;
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.5rem;
@@ -40,8 +39,8 @@
 .brand-text {
   font-size: 1.35rem;
   font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.02em;
+  color: #fff;
+  letter-spacing: 0;
 }
 
 .brand-tagline {
@@ -52,14 +51,13 @@
   max-width: 320px;
 }
 
-/* Social links */
 .social-links {
   display: flex;
   gap: 0.75rem;
 
   a {
     background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
+    color: #fff;
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
@@ -72,13 +70,12 @@
 
     &:hover {
       background: var(--site-accent);
-      color: #ffffff;
+      color: #fff;
       transform: translateY(-2px);
     }
   }
 }
 
-/* Headings */
 h4 {
   font-size: 0.85rem;
   font-weight: 800;
@@ -88,7 +85,6 @@ h4 {
   margin-bottom: 1.5rem;
 }
 
-/* Footer Links & Lists */
 .footer-links,
 .contact-list,
 .opening-list {
@@ -119,7 +115,6 @@ h4 {
   }
 }
 
-/* Icon list layout */
 .contact-list,
 .opening-list {
   li {
@@ -130,7 +125,7 @@ h4 {
       flex-shrink: 0;
       margin-top: 0.15rem;
     }
-    
+
     a {
       color: rgba(255, 255, 255, 0.85);
       text-decoration: none;
@@ -141,14 +136,13 @@ h4 {
         color: var(--site-accent);
       }
     }
-    
+
     span {
       font-weight: 500;
     }
   }
 }
 
-/* Footer Bottom / Copyright */
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 2rem;
@@ -164,12 +158,11 @@ h4 {
   }
 }
 
-/* Responsiveness */
 @media (max-width: 991.98px) {
   .site-footer {
     padding: 4rem 0 2rem;
   }
-  
+
   .footer-content {
     margin-bottom: 2rem;
   }

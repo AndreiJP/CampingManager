@@ -10,8 +10,17 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.16), transparent 28rem),
-    linear-gradient(135deg, var(--site-green) 0%, var(--site-green-soft) 58%, #203821 100%);
+    radial-gradient(
+      circle at 82% 20%,
+      rgba(255, 255, 255, 0.16),
+      transparent 28rem
+    ),
+    linear-gradient(
+      135deg,
+      var(--site-green) 0%,
+      var(--site-green-soft) 58%,
+      #203821 100%
+    );
 }
 
 .site-hero-content {

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 
 export interface SlideshowItem {
   imageUrl: string;
@@ -8,44 +8,58 @@ export interface SlideshowItem {
 }
 
 @Component({
-  selector: 'app-slideshow',
+  selector: "app-slideshow",
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './slideshow.component.html',
-  styleUrls: ['./slideshow.component.scss']
+  templateUrl: "./slideshow.component.html",
+  styleUrls: ["./slideshow.component.scss"],
 })
 export class SlideshowComponent implements OnInit, OnDestroy {
   @Input() items: SlideshowItem[] = [];
   @Input() interval = 5000;
-  
-  currentIndex = 0;
-  private timer: any;
 
-  ngOnInit() {
+  currentIndex = 0;
+  private timer: ReturnType<typeof setInterval> | null = null;
+
+  ngOnInit(): void {
     this.startTimer();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.stopTimer();
   }
 
-  startTimer() {
+  startTimer(): void {
+    if (this.items.length <= 1) {
+      return;
+    }
+
     this.timer = setInterval(() => {
       this.next();
     }, this.interval);
   }
 
-  stopTimer() {
+  stopTimer(): void {
     if (this.timer) {
       clearInterval(this.timer);
+      this.timer = null;
     }
   }
 
-  next() {
+  next(): void {
+    if (this.items.length === 0) {
+      return;
+    }
+
     this.currentIndex = (this.currentIndex + 1) % this.items.length;
   }
 
-  prev() {
-    this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+  prev(): void {
+    if (this.items.length === 0) {
+      return;
+    }
+
+    this.currentIndex =
+      (this.currentIndex - 1 + this.items.length) % this.items.length;
   }
 }

@@ -1,0 +1,69 @@
+.field-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 4.75rem;
+  border: 1px solid #dedfd9;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.field-card > i {
+  color: var(--site-green);
+  font-size: 1.35rem;
+}
+
+label {
+  display: block;
+  color: var(--site-muted);
+  font-size: 0.875rem;
+  margin-bottom: 0.15rem;
+}
+
+.field-value {
+  color: #252a26;
+  font-weight: 600;
+}
+
+.accommodation-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  min-width: 300px;
+  background: #fff;
+  border: 1px solid #e7e2d8;
+  border-radius: 0.75rem;
+  z-index: 1050;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.accommodation-option {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 0;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: 0.2s;
+  color: var(--site-ink);
+}
+
+.accommodation-option:hover {
+  background: #edf4e8;
+  color: var(--site-green);
+}
+
+.accommodation-option.selected {
+  background: #edf4e8;
+  font-weight: 600;
+  color: var(--site-green);
+}

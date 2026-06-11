@@ -1,6 +1,14 @@
-<nav class="navbar navbar-expand-lg site-navbar" id="top" *ngIf="config$ | async as config">
+<nav
+  class="navbar navbar-expand-lg site-navbar"
+  id="top"
+  *ngIf="config$ | async as config"
+>
   <div class="container-xxl">
-    <a class="navbar-brand site-brand" href="#top" [attr.aria-label]="config.siteName + ' home'">
+    <a
+      class="navbar-brand site-brand"
+      href="#top"
+      [attr.aria-label]="config.siteName + ' home'"
+    >
       <span class="site-brand-mark">
         <i class="bi" [ngClass]="config.logoIcon"></i>
       </span>
@@ -22,27 +30,48 @@
     <div class="collapse navbar-collapse" id="siteNavigation">
       <ul class="navbar-nav mx-lg-auto align-items-lg-center gap-lg-3">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+          <a
+            class="nav-link"
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            Home
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/about" routerLinkActive="active">Chi Siamo</a>
+          <a class="nav-link" routerLink="/about" routerLinkActive="active"
+            >Chi siamo</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/activities" routerLinkActive="active">Attività</a>
+          <a class="nav-link" routerLink="/activities" routerLinkActive="active"
+            >Attivita</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/gallery" routerLinkActive="active">Galleria</a>
+          <a class="nav-link" routerLink="/gallery" routerLinkActive="active"
+            >Galleria</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/rules" routerLinkActive="active">Regolamento</a>
+          <a class="nav-link" routerLink="/rules" routerLinkActive="active"
+            >Regolamento</a
+          >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contatti</a>
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active"
+            >Contatti</a
+          >
         </li>
       </ul>
 
       <div class="site-actions">
-        <button class="btn btn-link site-language" type="button" aria-label="Lingua italiano">
+        <button
+          class="btn btn-link site-language"
+          type="button"
+          aria-label="Lingua italiano"
+        >
           <span class="flag-dot"></span>
           IT
           <i class="bi bi-chevron-down"></i>
