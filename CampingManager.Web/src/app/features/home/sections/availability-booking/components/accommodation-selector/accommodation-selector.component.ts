@@ -1,11 +1,12 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { TranslatePipe } from "@ngx-translate/core";
 import type { AccommodationOption } from "../../availability-booking.component";
 
 @Component({
   selector: "app-accommodation-selector",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: "./accommodation-selector.component.html",
   styleUrl: "./accommodation-selector.component.scss",
 })

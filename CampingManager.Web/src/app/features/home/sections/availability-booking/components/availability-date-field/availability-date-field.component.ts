@@ -1,16 +1,18 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { TranslatePipe } from "@ngx-translate/core";
 import type { CalendarDay } from "../../availability-booking.component";
 
 @Component({
   selector: "app-availability-date-field",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: "./availability-date-field.component.html",
   styleUrl: "./availability-date-field.component.scss",
 })
 export class AvailabilityDateFieldComponent {
   @Input() label = "";
+  @Input() placeholder = "";
   @Input() value = "";
   @Input() isOpen = false;
   @Input() hasError = false;

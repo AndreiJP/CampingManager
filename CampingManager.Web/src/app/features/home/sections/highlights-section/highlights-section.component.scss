@@ -1,0 +1,33 @@
+.highlight-card {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  transition: transform 0.3s ease;
+}
+
+.highlight-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-wrap {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1rem;
+  background: rgba(47, 125, 66, 0.05);
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--site-green);
+}
+
+h5 {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+}

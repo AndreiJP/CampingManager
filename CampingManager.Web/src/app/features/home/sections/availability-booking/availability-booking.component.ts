@@ -1,5 +1,7 @@
-import { Component, inject, HostListener } from "@angular/core";
+import { Component, inject, HostListener, OnInit, OnDestroy } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
+import { TranslateService } from "@ngx-translate/core";
+import { Subscription } from "rxjs";
 
 export interface AccommodationOption {
   value: string;
@@ -23,15 +25,12 @@ export interface CalendarDay {
   templateUrl: "./availability-booking.component.html",
   styleUrl: "./availability-booking.component.scss",
 })
-export class AvailabilityBookingComponent {
+export class AvailabilityBookingComponent implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
+  private langSubscription?: Subscription;
 
-  readonly accommodationOptions: AccommodationOption[] = [
-    { value: "all", label: "Tutte le tipologie" },
-    { value: "camper", label: "Camper" },
-    { value: "tent", label: "Tenda" },
-    { value: "caravan", label: "Roulotte" },
-  ];
+  accommodationOptions: AccommodationOption[] = [];
 
   readonly stayDetailsForm = this.formBuilder.nonNullable.group({
     checkInDate: ["", [Validators.required]],
@@ -76,22 +75,70 @@ export class AvailabilityBookingComponent {
   calendarYear = new Date().getFullYear();
   calendarMonth = new Date().getMonth(); // 0-indexed
 
-  readonly monthNames = [
-    "Gennaio",
-    "Febbraio",
-    "Marzo",
-    "Aprile",
-    "Maggio",
-    "Giugno",
-    "Luglio",
-    "Agosto",
-    "Settembre",
-    "Ottobre",
-    "Novembre",
-    "Dicembre",
-  ];
+  monthNames: string[] = [];
+  weekdayNames: string[] = [];
+  selectDatePlaceholder = "";
 
-  readonly weekdayNames = ["Lu", "Ma", "Me", "Gi", "Ve", "Sa", "Do"];
+  ngOnInit(): void {
+    this.updateTranslations();
+    this.langSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateTranslations();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.langSubscription?.unsubscribe();
+  }
+
+  private updateTranslations(): void {
+    const isEn = this.translate.currentLang() === "en";
+
+    this.selectDatePlaceholder = isEn ? "Choose date" : "Scegli data";
+
+    this.monthNames = isEn
+      ? [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ]
+      : [
+          "Gennaio",
+          "Febbraio",
+          "Marzo",
+          "Aprile",
+          "Maggio",
+          "Giugno",
+          "Luglio",
+          "Agosto",
+          "Settembre",
+          "Ottobre",
+          "Novembre",
+          "Dicembre",
+        ];
+
+    this.weekdayNames = isEn
+      ? ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+      : ["Lu", "Ma", "Me", "Gi", "Ve", "Sa", "Do"];
+
+    this.accommodationOptions = [
+      {
+        value: "all",
+        label: isEn ? "All types" : "Tutte le tipologie",
+      },
+      { value: "camper", label: "Camper" },
+      { value: "tent", label: isEn ? "Tent" : "Tenda" },
+      { value: "caravan", label: isEn ? "Caravan" : "Roulotte" },
+    ];
+  }
 
   @HostListener("document:click")
   onDocumentClick(): void {
@@ -328,11 +375,27 @@ export class AvailabilityBookingComponent {
 
   get guestSummary(): string {
     const value = this.stayDetailsForm.getRawValue();
-    const adults = `${value.adultsCount} adult${value.adultsCount === 1 ? "o" : "i"}`;
+    const isEn = this.translate.currentLang() === "en";
+
+    const adultsLabel = isEn
+      ? value.adultsCount === 1
+        ? "adult"
+        : "adults"
+      : value.adultsCount === 1
+        ? "adulto"
+        : "adulti";
+
+    const childrenLabel = isEn
+      ? value.childrenCount === 1
+        ? "child"
+        : "children"
+      : value.childrenCount === 1
+        ? "bambino"
+        : "bambini";
+
+    const adults = `${value.adultsCount} ${adultsLabel}`;
     const children =
-      value.childrenCount > 0
-        ? `, ${value.childrenCount} bambin${value.childrenCount === 1 ? "o" : "i"}`
-        : "";
+      value.childrenCount > 0 ? `, ${value.childrenCount} ${childrenLabel}` : "";
 
     return `${adults}${children}`;
   }
@@ -341,9 +404,12 @@ export class AvailabilityBookingComponent {
     const selectedValue =
       this.stayDetailsForm.controls.accommodationType.value;
 
+    const defaultLabel =
+      this.translate.currentLang() === "en" ? "All types" : "Tutte le tipologie";
+
     return (
       this.accommodationOptions.find((option) => option.value === selectedValue)
-        ?.label ?? "Tutte le tipologie"
+        ?.label ?? defaultLabel
     );
   }
 
@@ -361,7 +427,9 @@ export class AvailabilityBookingComponent {
 
     if (checkInDate >= checkOutDate) {
       this.errorMessage =
-        "La data di check-out deve essere successiva al check-in.";
+        this.translate.currentLang() === "en"
+          ? "Check-out date must be after check-in date."
+          : "La data di check-out deve essere successiva al check-in.";
       return;
     }
 

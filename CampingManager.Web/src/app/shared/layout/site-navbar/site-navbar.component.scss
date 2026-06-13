@@ -65,13 +65,78 @@
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    #2f7d42 0 33%,
-    #fff 33% 66%,
-    #c9473d 66% 100%
-  );
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  &.flag-it {
+    background: linear-gradient(
+      90deg,
+      #009246 0 33%,
+      #ffffff 33% 66%,
+      #ce2b37 66% 100%
+    );
+  }
+
+  &.flag-en {
+    /* British Flag (Union Jack) simplified for a small circle */
+    background: #00247d;
+    background-image: 
+      /* Red Vertical/Horizontal */
+      linear-gradient(90deg, transparent 46%, #cf142b 46% 54%, transparent 54%),
+      linear-gradient(0deg, transparent 46%, #cf142b 46% 54%, transparent 54%),
+      /* White Borders for crosses */
+      linear-gradient(90deg, transparent 42%, #ffffff 42% 58%, transparent 58%),
+      linear-gradient(0deg, transparent 42%, #ffffff 42% 58%, transparent 58%),
+      /* Diagonals (Simplified) */
+      linear-gradient(45deg, transparent 40%, #ffffff 40% 60%, transparent 60%),
+      linear-gradient(-45deg, transparent 40%, #ffffff 40% 60%, transparent 60%);
+    background-blend-mode: normal;
+    
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        linear-gradient(45deg, transparent 46%, #cf142b 46% 54%, transparent 54%),
+        linear-gradient(-45deg, transparent 46%, #cf142b 46% 54%, transparent 54%);
+    }
+  }
+}
+
+.dropdown-item {
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(47, 125, 66, 0.05);
+    color: var(--site-green);
+  }
+
+  &.active {
+    background-color: var(--site-green);
+    color: white;
+    
+    .flag-dot {
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .lang-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+.lang-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6c757d;
+}
+
+.site-language.dropdown-toggle::after {
+  display: none; /* We use the bi-chevron-down icon or the default caret */
 }
 
 .site-booking-btn {

@@ -1,0 +1,77 @@
+{
+  "SITE": {
+    "NAME": "Camping Verde",
+    "HERO_TITLE": "Piazzole camper e tende nel verde",
+    "OPENING_HOURS": "Aperto da Aprile a Ottobre - 08:00 - 22:00",
+    "TAGLINE": "Vivi un'esperienza immersa nella natura, con piazzole spaziose, servizi moderni e relax per tutta la famiglia."
+  },
+  "FOOTER": {
+    "QUICK_LINKS": "Link rapidi",
+    "CONTACTS": "Contatti",
+    "HOURS_SEASON": "Orari e stagione",
+    "CHECK_IN_OUT": "Check-in: 14:00 - 20:00<br />Check-out: 08:00 - 11:00",
+    "RIGHTS": "Tutti i diritti riservati. Gestito da CampingManager.",
+    "CHECK_AVAILABILITY": "Verifica disponibilità",
+    "BOOK_PITCH": "Prenota piazzola"
+  },
+  "NAVBAR": {
+    "HOME": "Home",
+    "ABOUT": "Chi siamo",
+    "ACTIVITIES": "Attività",
+    "GALLERY": "Galleria",
+    "RULES": "Regolamento",
+    "CONTACT": "Contatti",
+    "BOOK_NOW": "Prenota ora"
+  },
+  "COMMON": {
+    "LANGUAGE": "Lingua",
+    "ITALIAN": "Italiano",
+    "ENGLISH": "Inglese",
+    "CONTINUE": "Continua",
+    "SUBMIT": "Invia richiesta"
+  },
+  "BOOKING": {
+    "REQUEST_AVAILABILITY": "Richiedi disponibilità",
+    "CHECK_IN": "Check-in",
+    "CHECK_OUT": "Check-out",
+    "GUESTS": "Ospiti",
+    "ACCOMMODATION": "Sistemazione",
+    "SELECT_DATE": "Scegli data",
+    "COMPLETE_REQUEST": "Completa la richiesta",
+    "ADULTS": "Adulti",
+    "CHILDREN": "Bambini",
+    "AGE_13_PLUS": "Età 13+",
+    "AGE_0_12": "Età 0-12",
+    "FIRST_NAME": "Nome",
+    "LAST_NAME": "Cognome",
+    "EMAIL": "Email",
+    "PHONE": "Telefono",
+    "NOTES": "Note",
+    "SUCCESS_TITLE": "Richiesta completata.",
+    "SUCCESS_TEXT": "La richiesta non conferma automaticamente la prenotazione. Ti ricontatteremo per confermare disponibilità e dettagli."
+  },
+  "HIGHLIGHTS": {
+    "WIFI": { "TITLE": "WiFi Veloce", "DESC": "Connessione ovunque" },
+    "SERVICES": { "TITLE": "Servizi di Lusso", "DESC": "Igiene e comfort" },
+    "POWER": { "TITLE": "Elettricità", "DESC": "Colonnine potenti" },
+    "BBQ": { "TITLE": "Area BBQ", "DESC": "Grigliate in compagnia" },
+    "PETS": { "TITLE": "Pet Friendly", "DESC": "Amici a 4 zampe" }
+  },
+  "ABOUT": {
+    "P1": "Siamo una realtà immersa nel verde, dedicata a chi cerca una vacanza semplice, naturale e ben organizzata.",
+    "P2": "Il campeggio nasce per accogliere famiglie, camperisti e viaggiatori che vogliono vivere il territorio con calma e comfort."
+  },
+  "ACTIVITIES": {
+    "TREKKING": { "TITLE": "Trekking", "DESC": "Esplora i sentieri naturali che circondano il campeggio, ideali per chi ama la pace dei boschi e le viste panoramiche mozzafiato." },
+    "BIKE": { "TITLE": "Noleggio Bici", "DESC": "Noleggia le nostre bici e scopri le zone limitrofe con percorsi facili, perfetti per una pedalata nel verde in totale relax." },
+    "FAMILY": { "TITLE": "Per Famiglie", "DESC": "Spazi dedicati e attività pensate per il divertimento dei più piccoli, per una vacanza indimenticabile per tutta la famiglia." },
+    "RELAX": { "TITLE": "Relax", "DESC": "Un'area dedicata al benessere totale, dove staccare la spina e rigenerarsi tra i suoni della natura." }
+  },
+  "RULES": {
+    "INTRO": "Queste sono indicazioni provvisorie per la prima versione del sito.",
+    "ITEM1": "Rispetta il silenzio dopo le 23:00",
+    "ITEM2": "Tieni gli animali domestici al guinzaglio",
+    "ITEM3": "Mantieni pulita la piazzola",
+    "ITEM4": "Rispetta gli orari di check-in e check-out"
+  }
+}

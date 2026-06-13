@@ -1,0 +1,77 @@
+{
+  "SITE": {
+    "NAME": "Green Camping",
+    "HERO_TITLE": "Camper and tent pitches in the green",
+    "OPENING_HOURS": "Open from April to October - 08:00 - 22:00",
+    "TAGLINE": "Live an experience immersed in nature, with spacious pitches, modern services and relaxation for the whole family."
+  },
+  "FOOTER": {
+    "QUICK_LINKS": "Quick links",
+    "CONTACTS": "Contacts",
+    "HOURS_SEASON": "Hours and season",
+    "CHECK_IN_OUT": "Check-in: 14:00 - 20:00<br />Check-out: 08:00 - 11:00",
+    "RIGHTS": "All rights reserved. Powered by CampingManager.",
+    "CHECK_AVAILABILITY": "Check availability",
+    "BOOK_PITCH": "Book a pitch"
+  },
+  "NAVBAR": {
+    "HOME": "Home",
+    "ABOUT": "About us",
+    "ACTIVITIES": "Activities",
+    "GALLERY": "Gallery",
+    "RULES": "Rules",
+    "CONTACT": "Contact",
+    "BOOK_NOW": "Book now"
+  },
+  "COMMON": {
+    "LANGUAGE": "Language",
+    "ITALIAN": "Italian",
+    "ENGLISH": "English",
+    "CONTINUE": "Continue",
+    "SUBMIT": "Submit request"
+  },
+  "BOOKING": {
+    "REQUEST_AVAILABILITY": "Check Availability",
+    "CHECK_IN": "Check-in",
+    "CHECK_OUT": "Check-out",
+    "GUESTS": "Guests",
+    "ACCOMMODATION": "Accommodation",
+    "SELECT_DATE": "Choose date",
+    "COMPLETE_REQUEST": "Complete the request",
+    "ADULTS": "Adults",
+    "CHILDREN": "Children",
+    "AGE_13_PLUS": "Age 13+",
+    "AGE_0_12": "Age 0-12",
+    "FIRST_NAME": "First Name",
+    "LAST_NAME": "Last Name",
+    "EMAIL": "Email",
+    "PHONE": "Phone",
+    "NOTES": "Notes",
+    "SUCCESS_TITLE": "Request submitted.",
+    "SUCCESS_TEXT": "The request does not automatically confirm the booking. We will contact you to confirm availability and details."
+  },
+  "HIGHLIGHTS": {
+    "WIFI": { "TITLE": "Fast WiFi", "DESC": "Connection everywhere" },
+    "SERVICES": { "TITLE": "Luxury Services", "DESC": "Hygiene and comfort" },
+    "POWER": { "TITLE": "Electricity", "DESC": "Powerful hookups" },
+    "BBQ": { "TITLE": "BBQ Area", "DESC": "Grill with friends" },
+    "PETS": { "TITLE": "Pet Friendly", "DESC": "4-legged friends" }
+  },
+  "ABOUT": {
+    "P1": "We are a reality immersed in nature, dedicated to those looking for a simple, natural, and well-organized vacation.",
+    "P2": "The campsite was created to welcome families, campers, and travelers who want to experience the territory with calm and comfort."
+  },
+  "ACTIVITIES": {
+    "TREKKING": { "TITLE": "Trekking", "DESC": "Explore the natural trails surrounding the campsite, ideal for those who love the peace of the woods and panoramic views." },
+    "BIKE": { "TITLE": "Bike Rental", "DESC": "Rent our bikes and discover the surrounding areas with easy routes, perfect for a relaxing ride in the green." },
+    "FAMILY": { "TITLE": "For Families", "DESC": "Dedicated spaces and activities designed for the fun of the little ones, for an unforgettable vacation for the whole family." },
+    "RELAX": { "TITLE": "Relax", "DESC": "An area dedicated to total well-being, where you can switch off and recharge among the sounds of nature." }
+  },
+  "RULES": {
+    "INTRO": "These are provisional indications for the first version of the site.",
+    "ITEM1": "Respect silence after 23:00",
+    "ITEM2": "Keep pets on a leash",
+    "ITEM3": "Keep the pitch clean",
+    "ITEM4": "Respect check-in and check-out times"
+  }
+}

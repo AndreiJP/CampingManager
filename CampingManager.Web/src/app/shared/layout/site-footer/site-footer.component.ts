@@ -1,11 +1,12 @@
 import { CommonModule } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { TranslatePipe } from "@ngx-translate/core";
 import { ConfigService } from "../../config.service";
 
 @Component({
   selector: "app-site-footer",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: "./site-footer.component.html",
   styleUrl: "./site-footer.component.scss",
 })

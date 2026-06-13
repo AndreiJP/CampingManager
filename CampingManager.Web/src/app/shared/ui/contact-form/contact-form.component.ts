@@ -7,9 +7,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   template: `
-    <div class="container my-5">
       <form
-        class="contact-form p-4 bg-light rounded"
+        class="contact-form"
         [formGroup]="form"
         (ngSubmit)="submit()"
         novalidate
@@ -61,11 +60,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
           step dedicato.
         </div>
 
-        <button type="submit" class="btn contact-submit">
+        <button type="submit" class="btn contact-submit w-100">
           Prepara richiesta
         </button>
       </form>
-    </div>
   `,
   styles: [
     `

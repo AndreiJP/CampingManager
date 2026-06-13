@@ -5,11 +5,12 @@
       (ngSubmit)="continueToRequest()"
       novalidate
     >
-      <h2>Richiedi disponibilita</h2>
+      <h2>{{ "BOOKING.REQUEST_AVAILABILITY" | translate }}</h2>
 
       <div class="availability-grid">
         <app-availability-date-field
-          label="Check-in"
+          [label]="'BOOKING.CHECK_IN' | translate"
+          [placeholder]="selectDatePlaceholder"
           [value]="stayDetailsForm.controls.checkInDate.value"
           [isOpen]="showCheckInCalendar"
           [hasError]="
@@ -27,7 +28,8 @@
         ></app-availability-date-field>
 
         <app-availability-date-field
-          label="Check-out"
+          [label]="'BOOKING.CHECK_OUT' | translate"
+          [placeholder]="selectDatePlaceholder"
           [value]="stayDetailsForm.controls.checkOutDate.value"
           [isOpen]="showCheckOutCalendar"
           [hasError]="
@@ -66,7 +68,7 @@
         ></app-accommodation-selector>
 
         <button class="btn availability-submit" type="submit">
-          Continua
+          {{ "COMMON.CONTINUE" | translate }}
         </button>
       </div>
 
@@ -77,8 +79,8 @@
 
     <div class="booking-panel" *ngIf="stayDetailsCompleted">
       <div class="booking-summary">
-        <span class="badge rounded-pill">Richiesta non vincolante</span>
-        <h3>Completa la richiesta</h3>
+        <span class="badge rounded-pill">{{ "BOOKING.COMPLETE_REQUEST" | translate }}</span>
+        <h3>{{ "BOOKING.COMPLETE_REQUEST" | translate }}</h3>
         <p>
           {{ stayDetailsForm.controls.checkInDate.value | date: "dd/MM/yyyy" }}
           -
@@ -97,25 +99,24 @@
       >
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label" for="firstName">Nome</label>
+            <label class="form-label" for="firstName">{{ "BOOKING.FIRST_NAME" | translate }}</label>
             <div class="input-group has-validation">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
               <input
                 id="firstName"
                 class="form-control form-input-premium"
                 formControlName="firstName"
-                placeholder="Es. Mario"
+                [placeholder]="'BOOKING.FIRST_NAME' | translate"
                 [class.is-invalid]="
                   bookingForm.controls.firstName.touched &&
                   bookingForm.controls.firstName.invalid
                 "
               />
-              <div class="invalid-feedback">Nome obbligatorio.</div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" for="lastName">Cognome</label>
+            <label class="form-label" for="lastName">{{ "BOOKING.LAST_NAME" | translate }}</label>
             <div class="input-group has-validation">
               <span class="input-group-text"
                 ><i class="bi bi-person-badge"></i
@@ -124,18 +125,17 @@
                 id="lastName"
                 class="form-control form-input-premium"
                 formControlName="lastName"
-                placeholder="Es. Rossi"
+                [placeholder]="'BOOKING.LAST_NAME' | translate"
                 [class.is-invalid]="
                   bookingForm.controls.lastName.touched &&
                   bookingForm.controls.lastName.invalid
                 "
               />
-              <div class="invalid-feedback">Cognome obbligatorio.</div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" for="email">Email</label>
+            <label class="form-label" for="email">{{ "BOOKING.EMAIL" | translate }}</label>
             <div class="input-group has-validation">
               <span class="input-group-text"
                 ><i class="bi bi-envelope"></i
@@ -145,18 +145,17 @@
                 type="email"
                 class="form-control form-input-premium"
                 formControlName="email"
-                placeholder="mario.rossi@example.com"
+                placeholder="email@example.com"
                 [class.is-invalid]="
                   bookingForm.controls.email.touched &&
                   bookingForm.controls.email.invalid
                 "
               />
-              <div class="invalid-feedback">Inserisci una email valida.</div>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" for="phoneNumber">Telefono</label>
+            <label class="form-label" for="phoneNumber">{{ "BOOKING.PHONE" | translate }}</label>
             <div class="input-group has-validation">
               <span class="input-group-text"
                 ><i class="bi bi-telephone"></i
@@ -165,18 +164,17 @@
                 id="phoneNumber"
                 class="form-control form-input-premium"
                 formControlName="phoneNumber"
-                placeholder="Es. +39 333 1234567"
+                [placeholder]="'BOOKING.PHONE' | translate"
                 [class.is-invalid]="
                   bookingForm.controls.phoneNumber.touched &&
                   bookingForm.controls.phoneNumber.invalid
                 "
               />
-              <div class="invalid-feedback">Telefono obbligatorio.</div>
             </div>
           </div>
 
           <div class="col-12">
-            <label class="form-label" for="notes">Note</label>
+            <label class="form-label" for="notes">{{ "BOOKING.NOTES" | translate }}</label>
             <div class="input-group">
               <span class="input-group-text"
                 ><i class="bi bi-chat-left-text"></i
@@ -185,7 +183,7 @@
                 id="notes"
                 class="form-control form-input-premium"
                 formControlName="notes"
-                placeholder="Richieste speciali, orario di arrivo stimato o altre informazioni utili."
+                [placeholder]="'BOOKING.NOTES' | translate"
                 rows="3"
               ></textarea>
             </div>
@@ -195,17 +193,16 @@
         <div class="booking-success-alert" *ngIf="bookingSubmitted">
           <i class="bi bi-check-circle-fill success-alert-icon"></i>
           <div class="success-alert-content">
-            <strong>Richiesta completata.</strong>
+            <strong>{{ "BOOKING.SUCCESS_TITLE" | translate }}</strong>
             <span
-              >La richiesta non conferma automaticamente la prenotazione. Ti
-              ricontatteremo per confermare disponibilita e dettagli.</span
+              >{{ "BOOKING.SUCCESS_TEXT" | translate }}</span
             >
           </div>
         </div>
 
         <div class="booking-actions">
           <button class="btn availability-submit-booking" type="submit">
-            Invia richiesta
+            {{ "COMMON.SUBMIT" | translate }}
           </button>
         </div>
       </form>

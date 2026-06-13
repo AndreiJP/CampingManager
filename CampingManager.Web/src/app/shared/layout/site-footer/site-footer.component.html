@@ -6,11 +6,10 @@
           <span class="brand-icon">
             <i class="bi" [ngClass]="config.logoIcon"></i>
           </span>
-          <span class="brand-text">{{ config.siteName }}</span>
+          <span class="brand-text">{{ "SITE.NAME" | translate }}</span>
         </a>
         <p class="brand-tagline">
-          Vivi un'esperienza immersa nella natura, con piazzole spaziose,
-          servizi moderni e relax per tutta la famiglia.
+          {{ "SITE.TAGLINE" | translate }}
         </p>
         <div class="social-links">
           <a
@@ -44,16 +43,16 @@
       </div>
 
       <div class="col-lg-2 col-md-6 footer-links-col">
-        <h4>Link rapidi</h4>
+        <h4>{{ "FOOTER.QUICK_LINKS" | translate }}</h4>
         <ul class="footer-links">
           <li><a href="#top">Home</a></li>
-          <li><a href="#availability">Verifica disponibilita</a></li>
-          <li><a href="#availability">Prenota piazzola</a></li>
+          <li><a href="#availability">{{ "FOOTER.CHECK_AVAILABILITY" | translate }}</a></li>
+          <li><a href="#availability">{{ "FOOTER.BOOK_PITCH" | translate }}</a></li>
         </ul>
       </div>
 
       <div class="col-lg-3 col-md-6 footer-contacts-col">
-        <h4>Contatti</h4>
+        <h4>{{ "FOOTER.CONTACTS" | translate }}</h4>
         <ul class="contact-list">
           <li *ngIf="config.address">
             <i class="bi bi-geo-alt"></i>
@@ -71,15 +70,15 @@
       </div>
 
       <div class="col-lg-3 col-md-6 footer-opening-col">
-        <h4>Orari e stagione</h4>
+        <h4>{{ "FOOTER.HOURS_SEASON" | translate }}</h4>
         <ul class="opening-list">
           <li *ngIf="config.openingHours">
             <i class="bi bi-clock"></i>
-            <span>{{ config.openingHours }}</span>
+            <span>{{ "SITE.OPENING_HOURS" | translate }}</span>
           </li>
           <li>
             <i class="bi bi-shield-check"></i>
-            <span>Check-in: 14:00 - 20:00<br />Check-out: 08:00 - 11:00</span>
+            <span [innerHTML]="'FOOTER.CHECK_IN_OUT' | translate"></span>
           </li>
         </ul>
       </div>
@@ -87,8 +86,7 @@
 
     <div class="footer-bottom">
       <p>
-        &copy; {{ currentYear }} {{ config.siteName }}. Tutti i diritti
-        riservati. Gestito da CampingManager.
+        &copy; {{ currentYear }} {{ "SITE.NAME" | translate }}. {{ "FOOTER.RIGHTS" | translate }}
       </p>
     </div>
   </div>

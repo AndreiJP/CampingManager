@@ -7,12 +7,12 @@
     <a
       class="navbar-brand site-brand"
       href="#top"
-      [attr.aria-label]="config.siteName + ' home'"
+      [attr.aria-label]="('SITE.NAME' | translate) + ' home'"
     >
       <span class="site-brand-mark">
         <i class="bi" [ngClass]="config.logoIcon"></i>
       </span>
-      <span>{{ config.siteName }}</span>
+      <span>{{ "SITE.NAME" | translate }}</span>
     </a>
 
     <button
@@ -36,49 +36,82 @@
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }"
           >
-            Home
+            {{ "NAVBAR.HOME" | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/about" routerLinkActive="active"
-            >Chi siamo</a
-          >
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">
+            {{ "NAVBAR.ABOUT" | translate }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/activities" routerLinkActive="active"
-            >Attivita</a
-          >
+          <a class="nav-link" routerLink="/activities" routerLinkActive="active">
+            {{ "NAVBAR.ACTIVITIES" | translate }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/gallery" routerLinkActive="active"
-            >Galleria</a
-          >
+          <a class="nav-link" routerLink="/gallery" routerLinkActive="active">
+            {{ "NAVBAR.GALLERY" | translate }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/rules" routerLinkActive="active"
-            >Regolamento</a
-          >
+          <a class="nav-link" routerLink="/rules" routerLinkActive="active">
+            {{ "NAVBAR.RULES" | translate }}
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/contact" routerLinkActive="active"
-            >Contatti</a
-          >
+          <a class="nav-link" routerLink="/contact" routerLinkActive="active">
+            {{ "NAVBAR.CONTACT" | translate }}
+          </a>
         </li>
       </ul>
 
       <div class="site-actions">
-        <button
-          class="btn btn-link site-language"
-          type="button"
-          aria-label="Lingua italiano"
-        >
-          <span class="flag-dot"></span>
-          IT
-          <i class="bi bi-chevron-down"></i>
-        </button>
+        <div class="dropdown d-inline-block me-2">
+          <button
+            class="btn btn-link site-language dropdown-toggle"
+            type="button"
+            id="languageDropdown"
+            (click)="toggleDropdown($event)"
+            [attr.aria-expanded]="showDropdown"
+          >
+            <span
+              class="flag-dot"
+              [ngClass]="currentLang === 'it' ? 'flag-it' : 'flag-en'"
+            ></span>
+            {{ currentLang | uppercase }}
+            <i class="bi bi-chevron-down ms-1"></i>
+          </button>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            [class.show]="showDropdown"
+            aria-labelledby="languageDropdown"
+          >
+            <li>
+              <button
+                class="dropdown-item d-flex align-items-center gap-2"
+                (click)="changeLanguage('it')"
+                [class.active]="currentLang === 'it'"
+              >
+                <span class="flag-dot flag-it"></span>
+                <span class="lang-label">IT</span>
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item d-flex align-items-center gap-2"
+                (click)="changeLanguage('en')"
+                [class.active]="currentLang === 'en'"
+              >
+                <span class="flag-dot flag-en"></span>
+                <span class="lang-label">EN</span>
+              </button>
+            </li>
+          </ul>
+        </div>
         <a class="btn site-booking-btn" href="#availability">
           <i class="bi bi-calendar-event"></i>
-          Prenota ora
+          {{ "NAVBAR.BOOK_NOW" | translate }}
         </a>
       </div>
     </div>

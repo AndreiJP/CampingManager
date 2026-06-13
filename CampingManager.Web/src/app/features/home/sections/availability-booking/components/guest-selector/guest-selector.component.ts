@@ -1,10 +1,11 @@
 import { CommonModule } from "@angular/common";
 import { Component, EventEmitter, Input, Output } from "@angular/core";
+import { TranslatePipe } from "@ngx-translate/core";
 
 @Component({
   selector: "app-guest-selector",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: "./guest-selector.component.html",
   styleUrl: "./guest-selector.component.scss",
 })

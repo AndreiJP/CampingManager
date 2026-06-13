@@ -1,0 +1,13 @@
+<section class="highlights-section container-xxl py-5">
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-2 col-md-4 col-6" *ngFor="let item of highlights">
+      <div class="highlight-card">
+        <div class="icon-wrap">
+          <i class="bi {{ item.icon }}"></i>
+        </div>
+        <h5>{{ item.title | translate }}</h5>
+        <p>{{ item.desc | translate }}</p>
+      </div>
+    </div>
+  </div>
+</section>
